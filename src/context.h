@@ -4,11 +4,17 @@
 #include "tgaimage.h"
 
 struct TgaImageContext {
+
         TGAImage& tgaImage;
-        TGAColor  tgaColor;
-        bool      flipped;
+        TGAColor tgaColor;
+        bool flipped;
+
         explicit TgaImageContext(TGAImage& i) : tgaImage(i), tgaColor(), flipped(false) {}
-        void pixel(uint16_t x, uint16_t y);
+
+        inline void pixel(uint16_t x, uint16_t y) {
+                if (flipped) tgaImage.set(y, x, tgaColor);
+                else tgaImage.set(x, y, tgaColor);
+        }
 };
 
 namespace primitives {

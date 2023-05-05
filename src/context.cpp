@@ -1,13 +1,5 @@
 #include "context.h"
 
-void TgaImageContext::pixel(uint16_t x, uint16_t y) {
-
-        if (flipped)
-                tgaImage.set(y, x, tgaColor);
-        else
-                tgaImage.set(x, y, tgaColor);
-}
-
 void primitives::line(TgaImageContext c, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
 
         uint16_t dy = std::abs(y1 - y0);
