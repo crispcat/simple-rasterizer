@@ -13,11 +13,11 @@ const TGAColor COLOR_BLUE  = TGAColor(0,   0,   255, 255);
 const TGAColor COLOR_BLACK = TGAColor(0,   0,   0,   255);
 
 void drawTunnelStar(TgaImageContext c);
-void testVectors(TgaImageContext c);
+void defileVectors(TgaImageContext c);
 
 int main() {
 
-        auto &drawer(testVectors);
+        auto &drawer(defileVectors);
 
         TGAImage image(IMAGE_W, IMAGE_H, TGAImage::Format::RGB);
         TgaImageContext c(image);
@@ -62,9 +62,10 @@ void drawTunnelStar(TgaImageContext c) {
         std::cout << "Tunnel Star rendered!" << std::endl;
 }
 
-void testVectors(TgaImageContext c) {
+void defileVectors(TgaImageContext c) {
 
         #ifdef PROFILE
+        std::cout.setstate(std::ios_base::failbit);
         for (uint32_t i = 0; i < 100000; i++) {
         #endif
         Vec2Int vec2intA(1, -2);
