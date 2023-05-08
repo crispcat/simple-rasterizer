@@ -38,7 +38,8 @@ template<class T> struct Vector2 {
                 return Vector2<float_t>(x / n, y / n);
         }
 
-        template<class > friend inline std::ostream& operator << (std::ostream& s, Vector2<T> v);
+        template<class > friend inline std::ostream& operator << (std::ostream &s, Vector2<T> v);
+        template<class > friend inline std::istream& operator >> (std::istream &s, Vector2<T> &v);
 };
 
 template<class T> struct Vector3 {
@@ -75,7 +76,8 @@ template<class T> struct Vector3 {
                 return Vector3<float_t>(x / n, y / n, z / n);
         }
 
-        template<class > friend inline std::ostream& operator << (std::ostream& s, Vector3<T> v);
+        template<class > friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
+        template<class > friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
 };
 
 typedef Vector2<int32_t> Vec2Int;
@@ -83,12 +85,32 @@ typedef Vector3<int32_t> Vec3Int;
 typedef Vector2<float_t> Vec2Float;
 typedef Vector3<float_t> Vec3Float;
 
-template<class T> inline std::ostream& operator << (std::ostream& s, Vector2<T> v) {
+const Vec2Int Vec2IntZero();
+const Vec3Int Vec3IntZero();
+
+const Vec2Float Vec2FloatZero();
+const Vec3Float Vec3FloatZero();
+
+const Vec2Int Vec2IntOne(1, 1);
+const Vec3Int Vec3IntOne(1, 1, 1);
+
+const Vec2Float Vec2FloatOne(1.f, 1.f);
+const Vec3Float Vec3FloatOne(1.f, 1.f, 1.f);
+
+template<class T> inline std::ostream& operator << (std::ostream &s, Vector2<T> v) {
         return s << "(" << v.x << ", " << v.y << ")";
 }
 
-template<class T> inline std::ostream& operator << (std::ostream& s, Vector3<T> v) {
+template<class T> inline std::istream& operator >> (std::istream &s, Vector2<T> &v) {
+        return s >> v.x >> v.y;
+}
+
+template<class T> inline std::ostream& operator << (std::ostream &s, Vector3<T> v) {
         return s << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+}
+
+template<class T> inline std::istream& operator >> (std::istream &s, Vector3<T> &v) {
+        return s >> v.x >> v.y >> v.z;
 }
 
 namespace geometry {

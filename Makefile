@@ -2,43 +2,60 @@ COMPILER = clang++
 CPPFLAGS = -std=c++14
 LDFLAGS  =
 LIBS     = -lm
-TARGET   = simple-rasterizer
-DST_DIR  = ./bin/
-SRC_DIR  = ./src/
-OBJ_DIR  = ./obj/
+DST_DIR  = bin/
+SRC_DIR  = src/
+OBJ_DIR  = obj/
+RES_DIR  = res/
+
+TARGET_RELEASE  = simple-rasterizer
+TARGET_DEBUG    = simple-rasterizer-debug
 
 SRC := $(shell find $(SRC_DIR) -type f -name '*.cpp')
-OBJ := $(patsubst %.cpp,$(OBJ_DIR)%.o,$(notdir $(wildcard $(SRC))))
+RES := $(notdir $(wildcard $(RES_DIR)*))
 
-all: LDFLAGS += -s
-all: CPPFLAGS += -O3 -D RELEASE
-all: $(DST_DIR)$(TARGET)
+OBJ_RELEASE := $(patsubst %.cpp,$(OBJ_DIR)release/%.o,$(patsubst $(SRC_DIR)%,%,$(wildcard $(SRC))))
+OBJ_DEBUG   := $(patsubst %.cpp,$(OBJ_DIR)debug/%.o,$(patsubst $(SRC_DIR)%,%,$(wildcard $(SRC))))
 
-debug: LDFLAGS +=
-debug: CPPFLAGS += -g -ggdb -O0 -D DEBUG
-debug: $(DST_DIR)$(TARGET)
+.PHONY: all run profile clean
 
-profile: LDFLAGS += -g -ggdb -pg
-profile: CPPFLAGS += -g -ggdb -pg -O0 -D PROFILE
-profile: $(DST_DIR)$(TARGET)
+.all: release debug
 
-$(DST_DIR)$(TARGET): $(OBJ)
+release: LDFLAGS += -s
+release: CPPFLAGS += -O3 -D RELEASE
+release: $(DST_DIR)$(TARGET_RELEASE) $(DST_DIR)$(RES)
+
+debug: LDFLAGS += -g -ggdb -pg
+debug: CPPFLAGS += -g -ggdb -pg -O0 -D DEBUG -D PROFILE
+debug: $(DST_DIR)$(TARGET_DEBUG) $(DST_DIR)$(RES)
+
+$(DST_DIR)$(TARGET_RELEASE): $(OBJ_RELEASE)
 	mkdir -p $(@D)
-	$(COMPILER) -Wall $(LDFLAGS) -o $(DST_DIR)$(TARGET) $(OBJ) $(LIBS)
+	$(COMPILER) -Wall $(LDFLAGS) -o $(DST_DIR)$(TARGET_RELEASE) $(OBJ_RELEASE) $(LIBS)
 
-$(OBJ): ./obj/%.o: ./src/%.cpp
+$(DST_DIR)$(TARGET_DEBUG): $(OBJ_DEBUG)
+	mkdir -p $(@D)
+	$(COMPILER) -Wall $(LDFLAGS) -o $(DST_DIR)$(TARGET_DEBUG) $(OBJ_DEBUG) $(LIBS)
+
+$(OBJ_RELEASE): $(OBJ_DIR)release/%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
 	$(COMPILER) -Wall $(CPPFLAGS) -c $(CFLAGS) $< -o $@
 
+$(OBJ_DEBUG): $(OBJ_DIR)debug/%.o: $(SRC_DIR)%.cpp
+	mkdir -p $(@D)
+	$(COMPILER) -Wall $(CPPFLAGS) -c $(CFLAGS) $< -o $@
+
+$(DST_DIR)$(RES): $(RES_DIR)$(RES)
+	rsync -ar $(RES_DIR) $(DST_DIR)
+
 run:
-	(cd $(DST_DIR) && ./$(TARGET))
+	(cd $(DST_DIR) && ./$(TARGET_RELEASE))
 	eog $(DST_DIR)output.tga &> /dev/null &
 
-run-profile: run
-	gprof -b $(DST_DIR)$(TARGET) $(DST_DIR)gmon.out
+profile:
+	(cd $(DST_DIR) && ./$(TARGET_DEBUG))
+	eog $(DST_DIR)output.tga &> /dev/null &
+	gprof -b $(DST_DIR)$(TARGET_DEBUG) $(DST_DIR)gmon.out
 
 clean:
 	-rm -rf $(DST_DIR)
 	-rm -rf $(OBJ_DIR)
-
-.PHONY: all profile debug run clean profile-run
