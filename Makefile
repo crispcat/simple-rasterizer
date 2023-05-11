@@ -47,12 +47,16 @@ $(OBJ_DEBUG): $(OBJ_DIR)debug/%.o: $(SRC_DIR)%.cpp
 $(DST_DIR)$(RES): $(RES_DIR)$(RES)
 	rsync -ar $(RES_DIR) $(DST_DIR)
 
+MODEL=./african_head.obj
+W=800
+H=800
+
 run:
-	(cd $(DST_DIR) && ./$(TARGET_RELEASE))
+	(cd $(DST_DIR) && ./$(TARGET_RELEASE) $(MODEL) $(W) $(H))
 	eog $(DST_DIR)output.tga &> /dev/null &
 
 profile:
-	(cd $(DST_DIR) && ./$(TARGET_DEBUG))
+	(cd $(DST_DIR) && ./$(TARGET_DEBUG) $(MODEL) $(W) $(H))
 	eog $(DST_DIR)output.tga &> /dev/null &
 	gprof -b $(DST_DIR)$(TARGET_DEBUG) $(DST_DIR)gmon.out
 

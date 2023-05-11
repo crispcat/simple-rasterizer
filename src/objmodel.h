@@ -5,16 +5,16 @@
 #include <string>
 #include "geometry.h"
 
-typedef Vector3<Vec3Int> Face;
-
-class ObjModel {
+class ObjModel
+{
 public:
-        ObjModel(const std::string &path);
+    std::vector<Vec3Float> vertices{};
+    std::vector<Vec3Float> uvs{};
+    std::vector<Vec3Float> normals{};
+    std::vector<Vec3Int> faces{};
+    explicit ObjModel(const std::string &path);
 private:
-        std::vector<Vec3Float> m_vertices {};
-        std::vector<Vec3Float> m_uvs {};
-        std::vector<Vec3Float> m_normals {};
-        std::vector<Face> m_faces {};
+    void parse_face_vertx(std::istringstream &s);
 };
 
 #endif //SIMPLE_RASTERIZER_OBJMODEL_H
