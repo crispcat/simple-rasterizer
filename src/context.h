@@ -32,7 +32,7 @@ struct ScreenLine
 /*
  * GENERAL ABSTRACT CONTEXT
  * */
-class Context
+class RenderContext
 {
 public:
     std::vector<Vec3Float> vertices {};
@@ -40,8 +40,8 @@ public:
     std::vector<Vec3Float> normals {};
     std::vector<Vec3Int> faces {};
     uint32_t color { COLOR_BLACK };
-    explicit Context(Vec3Float scale_vector) : scale_vector(scale_vector) {};
-    virtual ~Context() = default;
+    explicit RenderContext(Vec3Float scale_vector) : scale_vector(scale_vector) {};
+    virtual ~RenderContext() = default;
 public:
     void points();
     void lines();
@@ -59,11 +59,11 @@ protected:
 /*
  * REALTIME CONTEXT
  * */
-class RTContext : public Context
+class RtContext : public RenderContext
 {
 public:
     uint32_t *f_buff;
-    explicit RTContext(uint32_t *f_buff, uint16_t w, uint16_t h);
+    explicit RtContext(uint32_t *f_buff, uint16_t w, uint16_t h);
 protected:
     void pixel(uint16_t x, uint16_t y, bool flipped) override;
 private:
@@ -74,11 +74,11 @@ private:
 /*
  * TGA IMAGE CONTEXT
  * */
-class TGAImageContext : public Context
+class TgaImageContext : public RenderContext
 {
 public:
-    TGAImage &image;
-    explicit TGAImageContext(TGAImage &image);
+    TgaImage &image;
+    explicit TgaImageContext(TgaImage &image);
 protected:
     void pixel(uint16_t x, uint16_t y, bool flipped) override;
 private:

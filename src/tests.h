@@ -4,7 +4,7 @@
 #include "geometry.h"
 #include "context.h"
 
-void draw_primitives_triangles(Context &c)
+void draw_primitives_triangles(RenderContext &c)
 {
     c.color = COLOR_WHITE;
     c.triangle_lined(10,70, 50,160, 70,80);
@@ -24,7 +24,7 @@ void draw_primitives_triangles(Context &c)
 #endif
 }
 
-void draw_primitives_lines(Context &c)
+void draw_primitives_lines(RenderContext &c)
 {
     c.color = COLOR_GREEN;
     c.line(50, 50, 75, 75);

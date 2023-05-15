@@ -2,10 +2,10 @@
 #include "fenster.h"
 #include "context.h"
 #include "objmodel.h"
-//#include "tests.h"
+#include "tests.h"
 
 const int FPS = 30;
-void draw_model(Context &c, const ObjModel &m);
+void draw_model(RenderContext &c, const ObjModel &m);
 int main(int argc, char **argv)
 {
     if (argc < 3)
@@ -24,23 +24,38 @@ int main(int argc, char **argv)
     if (mode == "rt")
     {
         Fenster f(w, h, "simple-rasterizer");
-        RTContext c(f.getbuff(), w, h);
+        RtContext c(f.getbuff(), w, h);
         while (f.loop(FPS))
             draw_model(c, m);
     }
     else if (mode == "tga")
     {
-        TGAImage i(w, h, TGAImage::Format::RGB);
-        TGAImageContext c(i);
+        TgaImage i(w, h, TgaImage::Format::RGB);
+        TgaImageContext c(i);
         draw_model(c, m);
         c.image.write_tga_file("output.tga");
         std::cout << "Model rendered to output.tga" << std::endl;
+    }
+    else if (mode == "tests")
+    {
+        TgaImage i1(100, 100, TgaImage::Format::RGB);
+        TgaImage i2(200, 200, TgaImage::Format::RGB);
+
+        TgaImageContext c1(i1);
+        draw_primitives_lines(c1);
+        c1.image.write_tga_file("lines.tga");
+        std::cout << "Lines test rendered to lines.tga" << std::endl;
+
+        TgaImageContext c2(i2);
+        draw_primitives_triangles(c2);
+        c2.image.write_tga_file("triangles.tga");
+        std::cout << "Triangles test rendered to triangles.tga" << std::endl;
     }
 
     return 0;
 }
 
-void draw_model(Context &c, const ObjModel &m)
+void draw_model(RenderContext &c, const ObjModel &m)
 {
     c.color = COLOR_WHITE;
     c.vertices = m.vertices;

@@ -74,7 +74,7 @@ struct TGAColor
 };
 
 
-class TGAImage
+class TgaImage
 {
 protected:
     unsigned char *data;
@@ -92,11 +92,11 @@ public:
         GRAYSCALE = 1, RGB = 3, RGBA = 4
     };
 
-    TGAImage();
+    TgaImage();
 
-    TGAImage(int w, int h, int bpp);
+    TgaImage(int w, int h, int bpp);
 
-    TGAImage(const TGAImage &img);
+    TgaImage(const TgaImage &img);
 
     bool read_tga_file(const char *filename);
 
@@ -112,9 +112,9 @@ public:
 
     bool set(int x, int y, TGAColor c);
 
-    ~TGAImage();
+    ~TgaImage();
 
-    TGAImage &operator=(const TGAImage &img);
+    TgaImage &operator=(const TgaImage &img);
 
     int get_width();
 

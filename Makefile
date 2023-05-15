@@ -59,6 +59,10 @@ render: MODE=tga
 render: run
 	eog $(DST_DIR)output.tga &> /dev/null &
 
+tests: MODE=tests
+tests: run
+	eog $(DST_DIR)output.tga $(DST_DIR)lines.tga $(DST_DIR)triangles.tga &> /dev/null &
+
 profile:
 	(cd $(DST_DIR) && ./$(TARGET_DEBUG) $(MODE) $(MODEL) $(W) $(H))
 	gprof -b -P10 $(DST_DIR)$(TARGET_DEBUG) $(DST_DIR)gmon.out

@@ -3,14 +3,14 @@
 /*
  * REALTIME CONTEXT
  * */
-RTContext::RTContext(uint32_t *f_buff, uint16_t w, uint16_t h) :
-        Context(Vec3Float((float)w / 2, (float)h / 2, 1.f)),
+RtContext::RtContext(uint32_t *f_buff, uint16_t w, uint16_t h) :
+        RenderContext(Vec3Float((float)w / 2, (float)h / 2, 1.f)),
         f_buff(f_buff),
         w(w),
         h(h)
         { }
 
-void RTContext::pixel(uint16_t x, uint16_t y, bool flipped)
+void RtContext::pixel(uint16_t x, uint16_t y, bool flipped)
 {
     if (flipped)
         f_buff[(h - x) * w + y] = color;
@@ -21,13 +21,13 @@ void RTContext::pixel(uint16_t x, uint16_t y, bool flipped)
 /*
  * TGA IMAGE CONTEXT
  * */
-TGAImageContext::TGAImageContext(TGAImage &image) :
-    Context(Vec3Float((float)image.get_width() / 2, (float)image.get_height() / 2, 1.f)),
-    image(image),
-    h(image.get_height())
+TgaImageContext::TgaImageContext(TgaImage &image) :
+        RenderContext(Vec3Float((float)image.get_width() / 2, (float)image.get_height() / 2, 1.f)),
+        image(image),
+        h(image.get_height())
     { }
 
-void TGAImageContext::pixel(uint16_t x, uint16_t y, bool flipped)
+void TgaImageContext::pixel(uint16_t x, uint16_t y, bool flipped)
 {
     if (flipped)
         image.set(y, h - x, color);
@@ -39,7 +39,7 @@ void TGAImageContext::pixel(uint16_t x, uint16_t y, bool flipped)
  * GENERAL CONTEXT RASTERIZATION
  * */
 
-void Context::points()
+void RenderContext::points()
 {
     for (Vec3Int &face : faces)
     {
@@ -48,7 +48,7 @@ void Context::points()
     }
 }
 
-void Context::lines()
+void RenderContext::lines()
 {
     for (size_t i = 0; i < faces.size(); i += 2)
     {
@@ -58,7 +58,7 @@ void Context::lines()
     }
 }
 
-void Context::triangles()
+void RenderContext::triangles()
 {
     for (size_t i = 0; i < faces.size(); i += 3)
     {
@@ -69,7 +69,7 @@ void Context::triangles()
     }
 }
 
-void Context::triangles_wired()
+void RenderContext::triangles_wired()
 {
     for (size_t i = 0; i < faces.size(); i += 3)
     {
@@ -80,7 +80,7 @@ void Context::triangles_wired()
     }
 }
 
-void Context::line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+void RenderContext::line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
     ScreenLine l(x0, y0, x1, y1);
     pixel(l.x, l.y, l.flipped);
@@ -88,7 +88,7 @@ void Context::line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
         pixel(l.x, l.y, l.flipped);
 }
 
-void Context::triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
+void RenderContext::triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
 {
     auto brush = [this](uint16_t x, uint16_t y0, uint16_t y1)
     {
@@ -132,14 +132,14 @@ void Context::triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
     }
 }
 
-void Context::triangle_wired(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
+void RenderContext::triangle_wired(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
 {
     line(x0,y0, x1,y1);
     line(x1,y1, x2,y2);
     line(x2,y2, x0,y0);
 }
 
-ScreenPoint Context::vertex_transform2screen(Vec3Float v)
+ScreenPoint RenderContext::vertex_transform2screen(Vec3Float v)
 {
     Vec3Float sv = (v + Vec3FloatOne).scale(scale_vector);
     return {(uint16_t)sv.x, (uint16_t)sv.y};
