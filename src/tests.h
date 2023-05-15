@@ -1,0 +1,8 @@
+//
+// Created by sad8pus on 15.05.23.
+//
+
+#ifndef SIMPLE_RASTERIZER_TESTS_H
+#define SIMPLE_RASTERIZER_TESTS_H
+
+#endif //SIMPLE_RASTERIZER_TESTS_H
