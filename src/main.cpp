@@ -11,6 +11,7 @@ const TGAColor COLOR_BLUE  = TGAColor(0,   0,   255, 255);
 const TGAColor COLOR_BLACK = TGAColor(0,   0,   0,   255);
 
 void drawTunnelStar(uint16_t w, uint16_t h, std::string &model);
+void drawTriangles(uint16_t w, uint16_t h, std::string &model);
 void defileVectors(uint16_t w, uint16_t h, std::string &model);
 void drawModel(uint16_t w, uint16_t h, std::string &model);
 
@@ -25,9 +26,38 @@ int main(int argc, char **argv)
     std::string modelPath(argv[1]);
     uint16_t w = std::stoi(argv[2]);
     uint16_t h = std::stoi(argv[3]);
-    drawModel(w, h, modelPath);
+    drawTriangles(w, h, modelPath);
 
     return 0;
+}
+
+void drawTriangles(uint16_t w, uint16_t h, std::string &model)
+{
+    w = 200;
+    h = 200;
+    TGAImage image(w, h, TGAImage::Format::RGB);
+    TgaImageContext context(image);
+    ObjModel m(model);
+
+    context.tgaColor = COLOR_WHITE;
+    context.triangle_old(10,70, 50,160, 70,80);
+    context.triangle_old(180,50, 150,1, 70,180);
+    context.triangle_old(180,150, 120,160, 130,180);
+
+    context.tgaColor = COLOR_GREEN;
+    context.line(10,70,  50,160);
+    context.line(50,160, 70,80);
+    context.line(10,70,  70,80);
+    context.line(180,50, 150,1);
+    context.line(180,50, 70,180);
+    context.line(150,1,  70,180);
+    context.line(180,150, 120,160);
+    context.line(180,150, 130,180);
+    context.line(120,160, 130,180);
+
+    context.tgaImage.flip_vertically();
+    context.tgaImage.write_tga_file("output.tga");
+    std::cout << "ObjModel rendered!" << std::endl;
 }
 
 void drawModel(uint16_t w, uint16_t h, std::string &model)

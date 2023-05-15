@@ -36,7 +36,8 @@ void TgaImageContext::triangles()
         ScreenPoint p0 = vertex_transform2screen(vertices[faces[i].ivert]);
         ScreenPoint p1 = vertex_transform2screen(vertices[faces[i+1].ivert]);
         ScreenPoint p2 = vertex_transform2screen(vertices[faces[i+2].ivert]);
-        triangle_old(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
+        triangle_ylined(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
+        std::cout << "Rendered " << i << ' ' << i + 1 << ' ' << i + 2 << '\n';
     }
 }
 
@@ -47,49 +48,89 @@ void TgaImageContext::triangles_w()
         ScreenPoint p0 = vertex_transform2screen(vertices[faces[i].ivert]);
         ScreenPoint p1 = vertex_transform2screen(vertices[faces[i+1].ivert]);
         ScreenPoint p2 = vertex_transform2screen(vertices[faces[i+2].ivert]);
-        w_triangle(p0.x, p0.y, p1.x,p1.y, p2.x, p2.y);
+        triangle_wired(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
     }
 }
 
 void TgaImageContext::line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
-    ScreenLine l(x0, y0, x1, y1);
-    pixel(l.x, l.y, l.flipped);
-    while (l.move())
-        pixel(l.x, l.y, l.flipped);
-}
+    uint16_t dy = std::abs(y1 - y0);
+    uint16_t dx = std::abs(x1 - x0);
 
-void TgaImageContext::triangle_old(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
-{
-    auto brush = [this](uint16_t x, uint16_t y0, uint16_t y1)
+    bool flipped = false;
+    if (dy > dx)
     {
-        if (y1 < y0) std::swap(y1, y0);
-        for (uint16_t y = y0; y <= y1; y++)
-            pixel(x, y, false);
-    };
+        std::swap(dy, dx);
+        std::swap(x0, y0);
+        std::swap(x1, y1);
+        flipped = true;
+    }
 
-    if (x2 < x0) { std::swap(x2, x0); std::swap(y2, y0); }
-    if (x2 < x1) { std::swap(x2, x1); std::swap(y2, y1); }
-    if (x1 < x0) { std::swap(x1, x0); std::swap(y1, y0); }
+    if (x0 > x1)
+    {
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
 
-    ScreenLine ab(x0,y0, x1,y1);
-    ScreenLine bc(x1,y1, x2,y2);
-    ScreenLine ac(x0,y0, x2,y2);
+    pixel(x0, y0, flipped);
 
-    pixel(ac.x, ac.y, ac.flipped);
-
-    uint16_t* _x0 = ac.flipped ? &ac.y : &ac.x;
-    uint16_t* _y0 = ac.flipped ? &ac.x : &ac.y;
-    uint16_t* _y1 = ab.flipped ? &ab.x : &ab.y;
-    while (ab.move() && ac.move())
-        brush(*_x0, *_y0, *_y1);
-
-    _y1 = bc.flipped ? &bc.x : &bc.y;
-    while (bc.move() && ac.move())
-        brush(*_x0, *_y0, *_y1);
+    int _2dy = (dy << 1);
+    int _2dx = (dx << 1);
+    int dev = _2dy - dx;
+    int ddev = _2dy - _2dx;
+    int sdy = y1 - y0;
+    int diry = sdy > 0 ? 1 : sdy < 0 ? -1 : 0;
+    for (uint16_t x = x0 + 1, y = y0; x <= x1; x++)
+    {
+        if (dev > 0)
+        {
+            y += diry;
+            dev += ddev;
+        }
+        else { dev += _2dy; }
+        pixel(x, y, flipped);
+    }
 }
 
-void TgaImageContext::w_triangle(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
+void TgaImageContext::triangle_xlined(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
+{
+
+}
+
+void TgaImageContext::triangle_ylined(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
+{
+    if (y2 < y0) { std::swap(y2, y0); std::swap(x2, x0); }
+    if (y1 < y0) { std::swap(y1, y0); std::swap(x1, x0); }
+    if (y2 < y1) { std::swap(y2, y1); std::swap(x2, x1); }
+
+    uint16_t height_c = y2 - y0;
+    uint16_t height_b = y2 - y1;
+    uint16_t height_a = y1 - y0;
+
+    for (uint16_t y = y0; y <= y1; y++)
+    {
+        float ta = height_a == 0 ? 0 : (float)(y - y0) / height_a;
+        float tc = height_c == 0 ? 0 : (float)(y - y0) / height_c;
+        uint16_t xa = x0 + (x1 - x0) * ta;
+        uint16_t xc = x0 + (x2 - x0) * tc;
+        if (xc < xa) std::swap(xc, xa);
+        for (uint16_t x = xa; x <= xc; x++)
+            pixel(x, y, false);
+    }
+
+    for (uint16_t y = y1; y <= y2; y++)
+    {
+        float tb = height_b == 0 ? 0 : (float)(y - y1) / height_b;
+        float tc = height_c == 0 ? 0 : (float)(y - y0) / height_c;
+        uint16_t xb = x1 + (x2 - x1) * tb;
+        uint16_t xc = x0 + (x2 - x0) * tc;
+        if (xc < xb) std::swap(xc, xb);
+        for (uint16_t x = xb; x <= xc; x++)
+            pixel(x, y, false);
+    }
+}
+
+void TgaImageContext::triangle_wired(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
 {
     line(x0,y0, x1,y1);
     line(x1,y1, x2,y2);
@@ -108,51 +149,4 @@ void TgaImageContext::pixel(uint16_t x, uint16_t y, bool flipped)
         tgaImage.set(y, x, tgaColor);
     else
         tgaImage.set(x, y, tgaColor);
-}
-
-ScreenLine::ScreenLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
-{
-    uint16_t dy = std::abs(y1 - y0);
-    uint16_t dx = std::abs(x1 - x0);
-
-    flipped = false;
-    if (dy > dx)
-    {
-        std::swap(dy, dx);
-        std::swap(x0, y0);
-        std::swap(x1, y1);
-        flipped = true;
-    }
-
-    if (x0 > x1)
-    {
-        std::swap(x0, x1);
-        std::swap(y0, y1);
-    }
-
-    _2dy = (dy << 1);
-    int _2dx = (dx << 1);
-    dev = _2dy - dx;
-    ddev = _2dy - _2dx;
-    int sdy = y1 - y0;
-    diry = sdy > 0 ? 1 : sdy < 0 ? -1 : 0;
-    x = x0;
-    y = y0;
-    this->x1 = x1;
-}
-
-bool ScreenLine::move()
-{
-    if (x == x1)
-        return false;
-
-    x++;
-    if (dev > 0)
-    {
-        y += diry;
-        dev += ddev;
-    }
-    else { dev += _2dy; }
-
-    return true;
 }
