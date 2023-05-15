@@ -22,16 +22,29 @@ public:
     void points();
     void lines();
     void triangles();
-    void w_triangles();
+    void triangles_w();
     void line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
-    void triangle(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+    void triangle_old(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
     void w_triangle(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 private:
     Vec3Float scaleVector;
-    bool flipped { false };
-private:
-    void pixel(uint16_t x, uint16_t y);
+    void pixel(uint16_t x, uint16_t y, bool flipped);
     ScreenPoint vertex_transform2screen(Vec3Float v);
+};
+
+struct ScreenLine
+{
+    bool flipped;
+    uint16_t x;
+    uint16_t y;
+    uint16_t x1;
+    int diry;
+    int dev;
+    int ddev;
+    int _2dy;
+
+    ScreenLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
+    bool move();
 };
 
 #endif //SIMPLE_RASTERIZER_CONTEXT_H

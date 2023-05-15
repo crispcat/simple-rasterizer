@@ -17,7 +17,7 @@ ObjModel::ObjModel(const std::string &path)
 
     std::string line;
     std::string token;
-    uint32_t lineCount = 0;
+    int lineCount = 0;
     Vec3Float vec3f;
     while (!in.eof())
     {

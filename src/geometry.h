@@ -31,7 +31,7 @@ template<class T> struct Vector2
     float_t norm() const { return std::sqrt(sqnorm()); }
     T sqnorm() const { return x * x + y * y; }
 
-    Vector2<float_t> normalized() const { auto n = norm(); return Vector2<float_t>(x / n, y / n); }
+    Vector2<float> normalized() const { auto n = norm(); return Vector2<float>(x / n, y / n); }
 
     template<class> friend std::ostream& operator << (std::ostream &s, Vector2<T> v);
     template<class> friend std::istream& operator >> (std::istream &s, Vector2<T> &v);
@@ -63,16 +63,16 @@ template<class T> struct Vector3
 
     float_t norm() const { return std::sqrt(sqnorm()); }
     T sqnorm() const { return x * x + y * y + z * z; }
-    Vector3<float_t> normalized() const { auto n = norm(); return Vector3<float_t>(x / n, y / n, z / n); }
+    Vector3<float> normalized() const { auto n = norm(); return Vector3<float>(x / n, y / n, z / n); }
 
     template<class> friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
     template<class> friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
 };
 
-typedef Vector2  <int32_t>   Vec2Int;
-typedef Vector3  <int32_t>   Vec3Int;
-typedef Vector2  <float_t>   Vec2Float;
-typedef Vector3  <float_t>   Vec3Float;
+typedef Vector2  <int>    Vec2Int;
+typedef Vector3  <int>    Vec3Int;
+typedef Vector2  <float>  Vec2Float;
+typedef Vector3  <float>  Vec3Float;
 
 const Vec2Int Vec2IntOne(1, 1);
 const Vec3Int Vec3IntOne(1, 1, 1);

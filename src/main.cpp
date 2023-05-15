@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     std::string modelPath(argv[1]);
     uint16_t w = std::stoi(argv[2]);
     uint16_t h = std::stoi(argv[3]);
-    drawTunnelStar(w, h, modelPath);
+    drawModel(w, h, modelPath);
 
     return 0;
 }
@@ -39,7 +39,7 @@ void drawModel(uint16_t w, uint16_t h, std::string &model)
     context.tgaColor = COLOR_WHITE;
     context.vertices = m.vertices;
     context.faces = m.faces;
-    context.w_triangles();
+    context.triangles();
 
     context.tgaImage.flip_vertically();
     context.tgaImage.write_tga_file("output.tga");
