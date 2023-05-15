@@ -1,7 +1,7 @@
 COMPILER = clang++
 CPPFLAGS = -std=c++14
 LDFLAGS  =
-LIBS     = -lm
+LIBS     = -lm -lX11
 DST_DIR  = bin/
 SRC_DIR  = src/
 OBJ_DIR  = obj/
@@ -47,18 +47,21 @@ $(OBJ_DEBUG): $(OBJ_DIR)debug/%.o: $(SRC_DIR)%.cpp
 $(DST_DIR)$(RES): $(RES_DIR)$(RES)
 	rsync -ar $(RES_DIR) $(DST_DIR)
 
-MODEL=./african_head.obj
+MODE = rt
+MODEL=./diablo.obj
 W=800
 H=800
 
 run:
-	(cd $(DST_DIR) && ./$(TARGET_RELEASE) $(MODEL) $(W) $(H))
+	(cd $(DST_DIR) && ./$(TARGET_RELEASE) $(MODE) $(MODEL) $(W) $(H))
+
+render: MODE=tga
+render: run
 	eog $(DST_DIR)output.tga &> /dev/null &
 
 profile:
-	(cd $(DST_DIR) && ./$(TARGET_DEBUG) $(MODEL) $(W) $(H))
-	eog $(DST_DIR)output.tga &> /dev/null &
-	gprof -b $(DST_DIR)$(TARGET_DEBUG) $(DST_DIR)gmon.out
+	(cd $(DST_DIR) && ./$(TARGET_DEBUG) $(MODE) $(MODEL) $(W) $(H))
+	gprof -b -P10 $(DST_DIR)$(TARGET_DEBUG) $(DST_DIR)gmon.out
 
 clean:
 	-rm -rf $(DST_DIR)
