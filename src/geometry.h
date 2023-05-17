@@ -117,10 +117,41 @@ namespace geometry
     //  bx by bz
     template<class T> Vector3<T> cross(Vector3<T> a, Vector3<T> b)
     {
-        return Vector3<T>(a.y * b.z - a.z * b.y,
-                          a.z * b.x - a.x * b.z,
-                          a.x * b.y - a.y * b.x);
+        return { a.y * b.z - a.z * b.y,
+                 a.z * b.x - a.x * b.z,
+                 a.x * b.y - a.y * b.x };
     }
-}
 
+    //  barycentric coordinates are the weights of linear combination of vectors representing a point
+    //  inside a polygon.
+    //  P = (1 - u - v) * A + u*B + v*C
+    //  P = A + u*AB + v*AC
+    //  u*AB + v*AC + PA = 0
+    //  { u * AB(x) + v * AC(x) + PA(x) = 0;
+    //  { u * AB(y) + v * AC(y) + PA(y) = 0;
+    //  (u, v, 1) = (AB(x), AC(x), PA(x)) cross (AB(y), AC(y), PA(y))
+    //
+    template <class T> Vec3Float barycentric(Vector2<T> p, Vector2<T> a, Vector2<T> b, Vector2<T> c)
+    {
+        Vector3<T> uv = cross(Vector3<T>(b.x - a.x, c.x - a.x, p.x - a.x),
+                              Vector3<T>(b.y - a.y, c.y - a.y, p.y - a.y));
+        if (uv.z == 0)
+            return {-1, 1, 1};
+
+        return {1.f - (uv.x - uv.y) / uv.z, (float)uv.x / uv.z, (float)uv.y / uv.z};
+    }
+
+//    // checks whatever a point is inside a triangle_bound
+//    // optimized version without a single division
+//    template <class T> bool is_inside(Vector2<T> p, Vector2<T> a, Vector2<T> b, Vector2<T> c)
+//    {
+//        Vector3<T> uv = cross({ b.x - a.x, c.x - a.x, p.x - a.x },
+//                              { b.y - a.y, c.y - a.y, p.y - a.y });
+//        bool is_inside = uv.z != 0 &&
+//                ((uv.z > 0 && uv.x > 0 && uv.y > 0 && (1.f - uv.x - uv.y) > 0) ||
+//                 (uv.z < 0 && uv.x < 0 && uv.y < 0 && (1.f - uv.x - uv.y) < 0));
+//
+//        return is_inside;
+//    }
+}
 #endif //SIMPLE_RASTERIZER_GEOMETRY_H

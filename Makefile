@@ -1,3 +1,9 @@
+# run params
+W = 800
+H = 800
+MODEL = diablo.obj
+
+# make params
 COMPILER = clang++
 CPPFLAGS = -std=c++14
 LDFLAGS  =
@@ -11,22 +17,22 @@ TARGET_RELEASE  = simple-rasterizer
 TARGET_DEBUG    = simple-rasterizer-debug
 
 SRC := $(shell find $(SRC_DIR) -type f -name '*.cpp')
-RES := $(notdir $(wildcard $(RES_DIR)*))
+RES := $(patsubst %, $(DST_DIR)%, $(notdir $(wildcard $(RES_DIR)*)))
 
-OBJ_RELEASE := $(patsubst %.cpp,$(OBJ_DIR)release/%.o,$(patsubst $(SRC_DIR)%,%,$(wildcard $(SRC))))
-OBJ_DEBUG   := $(patsubst %.cpp,$(OBJ_DIR)debug/%.o,$(patsubst $(SRC_DIR)%,%,$(wildcard $(SRC))))
+OBJ_RELEASE := $(patsubst %.cpp, $(OBJ_DIR)release/%.o, $(patsubst $(SRC_DIR)%, %, $(wildcard $(SRC))))
+OBJ_DEBUG   := $(patsubst %.cpp, $(OBJ_DIR)debug/%.o, $(patsubst $(SRC_DIR)%, %, $(wildcard $(SRC))))
 
-.PHONY: all run profile clean
-
-.all: release debug
+all: release debug
 
 release: LDFLAGS += -s
 release: CPPFLAGS += -O3 -D RELEASE
-release: $(DST_DIR)$(TARGET_RELEASE) $(DST_DIR)$(RES)
+release: $(DST_DIR)$(TARGET_RELEASE)
+release: $(RES)
 
 debug: LDFLAGS += -g -ggdb -pg
 debug: CPPFLAGS += -g -ggdb -pg -O0 -D DEBUG -D PROFILE
-debug: $(DST_DIR)$(TARGET_DEBUG) $(DST_DIR)$(RES)
+debug: $(DST_DIR)$(TARGET_DEBUG)
+debug: $(RES)
 
 $(DST_DIR)$(TARGET_RELEASE): $(OBJ_RELEASE)
 	mkdir -p $(@D)
@@ -44,14 +50,10 @@ $(OBJ_DEBUG): $(OBJ_DIR)debug/%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
 	$(COMPILER) -Wall $(CPPFLAGS) -c $(CFLAGS) $< -o $@
 
-$(DST_DIR)$(RES): $(RES_DIR)$(RES)
-	rsync -ar $(RES_DIR) $(DST_DIR)
+$(RES): $(DST_DIR)%: $(RES_DIR)%
+	rsync --mkpath -ar $< $@
 
-MODE = rt
-MODEL=./diablo.obj
-W=800
-H=800
-
+run: MODE = rt
 run:
 	(cd $(DST_DIR) && ./$(TARGET_RELEASE) $(MODE) $(MODEL) $(W) $(H))
 
@@ -60,7 +62,8 @@ render: run
 	eog $(DST_DIR)output.tga &> /dev/null &
 
 tests: MODE=tests
-tests: run
+tests:
+	(cd $(DST_DIR) && ./$(TARGET_DEBUG) $(MODE) $(MODEL) $(W) $(H))
 	eog $(DST_DIR)output.tga $(DST_DIR)lines.tga $(DST_DIR)triangles.tga &> /dev/null &
 
 profile:

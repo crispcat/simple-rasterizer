@@ -12,23 +12,6 @@ const Color COLOR_GREEN = 0x00fa00;
 const Color COLOR_BLUE  = 0x0000fa;
 const Color COLOR_BLACK = 0x000000;
 
-typedef Vector2<uint16_t> ScreenPoint;
-
-struct ScreenLine
-{
-    bool flipped;
-    uint16_t x;
-    uint16_t y;
-    uint16_t x1;
-    int dev;
-    int ddev;
-    int _2dy;
-    int diry;
-    int xstep;
-    ScreenLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
-    bool move();
-};
-
 /*
  * GENERAL ABSTRACT CONTEXT
  * */
@@ -42,18 +25,40 @@ public:
     uint32_t color { COLOR_BLACK };
     explicit RenderContext(Vec3Float scale_vector) : scale_vector(scale_vector) {};
     virtual ~RenderContext() = default;
+
 public:
     void points();
     void lines();
     void triangles();
     void triangles_wired();
     void line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
+    void triangle_bound(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
     void triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
     void triangle_wired(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+    virtual void pixel(uint16_t x, uint16_t y) = 0;
+
+protected:
+    typedef Vector2<uint16_t> ScreenPoint;
+    struct ScreenLine
+    {
+        uint16_t *x;
+        uint16_t *y;
+        bool flipped;
+        uint16_t _x;
+        uint16_t _y;
+        uint16_t _x1;
+        int dev;
+        int ddev;
+        int _2dy;
+        int diry;
+        int dirx;
+        ScreenLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
+        bool move();
+    };
+
 protected:
     Vec3Float scale_vector;
-    virtual void pixel(uint16_t x, uint16_t y, bool flipped) = 0;
-    ScreenPoint vertex_transform2screen(Vec3Float v);
+    ScreenPoint transform2screen(Vec3Float v);
 };
 
 /*
@@ -62,11 +67,16 @@ protected:
 class RtContext : public RenderContext
 {
 public:
-    uint32_t *f_buff;
-    explicit RtContext(uint32_t *f_buff, uint16_t w, uint16_t h);
-protected:
-    void pixel(uint16_t x, uint16_t y, bool flipped) override;
+    explicit RtContext(uint32_t *f_buff, uint16_t w, uint16_t h) :
+            RenderContext({(float)w / 2, (float)h / 2, 1.f }),
+            f_buff(f_buff),
+            w(w),
+            h(h)
+            { }
+    void pixel(uint16_t x, uint16_t y) override { f_buff[(h - y) * w + x] = color; }
+
 private:
+    uint32_t *f_buff;
     uint16_t w;
     uint16_t h;
 };
@@ -78,9 +88,13 @@ class TgaImageContext : public RenderContext
 {
 public:
     TgaImage &image;
-    explicit TgaImageContext(TgaImage &image);
-protected:
-    void pixel(uint16_t x, uint16_t y, bool flipped) override;
+    explicit TgaImageContext(TgaImage &image) :
+            RenderContext({(float)image.get_width() / 2, (float)image.get_height() / 2, 1.f}),
+            image(image),
+            h(image.get_height())
+            { }
+    void pixel(uint16_t x, uint16_t y) override { image.set(x, h - y, color); }
+
 private:
     uint16_t h;
 };
