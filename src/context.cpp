@@ -65,9 +65,11 @@ void RenderContext::triangle_bound(uint16_t x0, uint16_t y0, uint16_t x1, uint16
     for (uint16_t x = x0; x <= x2; x++)
     for (uint16_t y = y0; y <= y2; y++)
     {
-        Vec3Float bc = geometry::barycentric(Vec2Int(x, y), a, b, c);
-        if (bc.x >= 0 && bc.y >= 0 && bc.z >= 0)
+        if (geometry::is_in_triangle(Vec2Int(x, y), a, b, c))
             pixel(x, y);
+//        Vec3Float bc = geometry::barycentric(Vec2Int(x, y), a, b, c);
+//        if (bc.x >= 0 && bc.y >= 0 && bc.z >= 0)
+//            pixel(x, y);
     }
 }
 

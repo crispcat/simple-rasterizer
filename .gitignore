@@ -1,4 +1,6 @@
-bin
-obj
-.idea
-.run
+bin/
+obj/
+.idea/
+.run/
+.depend_release
+.depend_debug

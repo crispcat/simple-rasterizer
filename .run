@@ -1,0 +1,24 @@
+# run params
+W = 800
+H = 800
+MODEL = diablo.obj
+
+.PHONY: run render tests profile
+
+run: MODE = rt
+run:
+	(cd $(DST_DIR) && ./$(TARGET_RELEASE) $(MODE) $(MODEL) $(W) $(H))
+
+render: MODE=tga
+render:
+	(cd $(DST_DIR) && ./$(TARGET_RELEASE) $(MODE) $(MODEL) $(W) $(H))
+	eog $(DST_DIR)output.tga &> /dev/null &
+
+tests: MODE=tests
+tests:
+	(cd $(DST_DIR) && ./$(TARGET_DEBUG) $(MODE) $(MODEL) $(W) $(H))
+	eog $(DST_DIR)output.tga $(DST_DIR)lines.tga $(DST_DIR)triangles.tga &> /dev/null &
+
+profile: MODE = rt
+profile:
+	(cd $(DST_DIR) && ./$(TARGET_DEBUG) $(MODE) $(MODEL) $(W) $(H)) || gprof -b -P10 $(DST_DIR)$(TARGET_DEBUG) $(DST_DIR)gmon.out
