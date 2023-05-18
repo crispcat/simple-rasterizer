@@ -46,7 +46,7 @@ protected:
  * */
 protected:
     void flat_light(Frag &f) const;
-    void gouroud_light(Frag &f);
+    void gouroud_light(Frag &f) const;
 /*
  * MISC
  * */

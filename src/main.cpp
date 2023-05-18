@@ -62,8 +62,9 @@ void draw_model(RenderContext &c, const ObjModel &m)
 {
     c.color = COLOR_WHITE;
     c.vertices = m.vertices;
-    c.faces = m.faces;
     c.normals = m.normals;
+    c.faces = m.faces;
+    c.uvs = m.uvs;
     c.triangles();
 //    color.color = COLOR_GREEN;
 //    color.triangles_wired();

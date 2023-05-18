@@ -128,7 +128,7 @@ namespace geometry
                  a.x * b.y - a.y * b.x };
     }
 
-    //  barycentric_screen coordinates are the weights of linear combination of vectors representing a point
+    //  barycentric_screen coordinates are the weights of linear combination of geometry representing a point
     //  inside a polygon.
     //
     //  P = (1 - u - v) * A + u*B + v*C
@@ -167,4 +167,18 @@ namespace geometry
         return isin;
     }
 }
+
+namespace calc
+{
+    inline float clamp0(float val)
+    {
+        return val < 0 ? 0 : val;
+    }
+
+    inline float clamp01(float val)
+    {
+        return val < 0 ? 0 : val > 1 ? 1 : val;
+    }
+}
+
 #endif //SIMPLE_RASTERIZER_GEOMETRY_H

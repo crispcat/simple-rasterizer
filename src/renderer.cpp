@@ -1,11 +1,12 @@
 #include "renderer.h"
+#include "geometry.h"
 
 RenderContext::RenderContext(uint16_t w, uint16_t h, float distance) :
     w(w),
     h(h),
     z_max(distance),
-    have_ns(false),
-    have_uvs(false),
+    have_ns(true),
+    have_uvs(true),
     scale_vector({(float)w / 2, (float)h / 2, 1.f }) {
     z_buff = new float[w * h];
     for (uint32_t i = 0; i < w * h; i++)
@@ -44,14 +45,17 @@ void RenderContext::frag(Frag &f)
 void RenderContext::flat_light(Frag &f) const
 {
     Vec3Float n = geometry::cross(f.v[2] - f.v[0], f.v[1] - f.v[0]).normalized();
-    float intensity = geometry::dot(light_dir, n);
-    intensity = intensity < 0 ? 0 : intensity;
-    f.color = f.color.vecf().scale(intensity);
+    float l = calc::clamp0(geometry::dot(light_dir, n));
+    f.color = f.color.vecf().scale(l);
 }
 
-void RenderContext::gouroud_light(Frag &f)
+void RenderContext::gouroud_light(Frag &f) const
 {
-
+    float l0 = calc::clamp0(geometry::dot(light_dir, f.ns[0]));
+    float l1 = calc::clamp0(geometry::dot(light_dir, f.ns[1]));
+    float l2 = calc::clamp0(geometry::dot(light_dir, f.ns[2]));
+    float l = geometry::dot(f.bcentr, { l0, l1, l2 });
+    f.color = f.color.vecf().scale(l);
 }
 
 ScreenPoint RenderContext::transform2screen(Vec3Float v) const
