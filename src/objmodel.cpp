@@ -64,15 +64,15 @@ void ObjModel::parse_face_vertx(std::istringstream &s)
 {
     char ch;
     Vec3Int ivec = Vec3Int(-1, -1, -1);
-    while (s >> ivec.ivert)
+    while (s >> ivec.iv)
     {
         if (s.peek() == '/')
         {
             s >> ch;
             if (s.peek() == '/')
-                s >> ch >> ivec.inorm;
+                s >> ch >> ivec.in;
             else
-                s >> ivec.iuv >> ch >> ivec.inorm;
+                s >> ivec.iuv >> ch >> ivec.in;
         }
         faces.push_back(ivec - Vec3IntOne); // sub to make indexes start from 0
     }

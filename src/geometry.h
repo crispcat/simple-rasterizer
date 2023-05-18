@@ -42,7 +42,8 @@ template<class T> struct Vector3
     union
     {
         struct { T x, y, z; };
-        struct { T ivert, iuv, inorm;};
+        struct { T r, g, b; };
+        struct { T iv, iuv, in;};
         T raw[3];
     };
 
@@ -69,10 +70,11 @@ template<class T> struct Vector3
     template<class> friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
 };
 
-typedef Vector2  <int>    Vec2Int;
-typedef Vector3  <int>    Vec3Int;
-typedef Vector2  <float>  Vec2Float;
-typedef Vector3  <float>  Vec3Float;
+typedef Vector2 <int> Vec2Int;
+typedef Vector3 <int> Vec3Int;
+typedef Vector2 <float> Vec2Float;
+typedef Vector3 <float> Vec3Float;
+typedef Vector2 <uint16_t> ScreenPoint;
 
 const Vec2Int Vec2IntOne(1, 1);
 const Vec3Int Vec3IntOne(1, 1, 1);
@@ -115,6 +117,10 @@ namespace geometry
     //  x  y  z
     //  ax ay az
     //  bx by bz
+    //
+    //  a.y * b.z - a.z * b.y = x
+    //  a.z * b.x - a.x * b.z = y
+    //  a.x * b.y - a.y * b.x = z
     template<class T> Vector3<T> cross(Vector3<T> a, Vector3<T> b)
     {
         return { a.y * b.z - a.z * b.y,
@@ -122,34 +128,41 @@ namespace geometry
                  a.x * b.y - a.y * b.x };
     }
 
-    //  barycentric coordinates are the weights of linear combination of vectors representing a point
+    //  barycentric_screen coordinates are the weights of linear combination of vectors representing a point
     //  inside a polygon.
+    //
     //  P = (1 - u - v) * A + u*B + v*C
     //  P = A + u*AB + v*AC
     //  u*AB + v*AC + PA = 0
+    //
     //  { u * AB(x) + v * AC(x) + PA(x) = 0;
     //  { u * AB(y) + v * AC(y) + PA(y) = 0;
+    //
     //  { (u, v, 1) dot (AB(x), AC(x), PA(x)) = 0;
     //  { (u, v, 1) dot (AB(y), AC(y), PA(y)) = 0;
+    //
     //  (u, v, 1) = (AB(x), AC(x), PA(x)) cross (AB(y), AC(y), PA(y))
-    template <class T> Vec3Float barycentric(Vector2<T> p, Vector2<T> a, Vector2<T> b, Vector2<T> c)
+    //
+    inline Vec3Float barycentric_screen(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint c)
     {
-        Vector3<T> uv = cross<T>({ b.x - a.x, c.x - a.x, p.x - a.x },
-                                 { b.y - a.y, c.y - a.y, p.y - a.y });
+        Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, p.x - a.x),
+                           Vec3Int(b.y - a.y, c.y - a.y, p.y - a.y));
         if (uv.z == 0)
             return {-1, 1, 1};
 
+        // normal is actually flipped so z coordinate will be negative
         return { 1.f - (float)(uv.x + uv.y) / -uv.z, (float)uv.x / -uv.z, (float)uv.y / -uv.z };
     }
 
-    template <class T> bool is_in_triangle(Vector2<T> p, Vector2<T> a, Vector2<T> b, Vector2<T> c)
+    // it is a little bit faster (~15%) than calc the exact barycentric_screen coordinates
+    inline bool is_in_triangle_screen(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint c)
     {
-        Vector3<T> uv = cross<T>({ b.x - a.x, c.x - a.x, p.x - a.x },
-                                 { b.y - a.y, c.y - a.y, p.y - a.y });
+        Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, p.x - a.x),
+                           Vec3Int(b.y - a.y, c.y - a.y, p.y - a.y));
         uv.z = -uv.z;
         bool isin = (uv.z != 0) &&
-                ((uv.z > 0 && uv.x > 0 && uv.y > 0 && (uv.z - (uv.x + uv.y) > 0)) ||
-                 (uv.z < 0 && uv.x < 0 && uv.y < 0 && (uv.z - (uv.x + uv.y) < 0)));
+                    ((uv.z > 0 && uv.x > 0 && uv.y > 0 && (uv.z - (uv.x + uv.y) > 0)) ||
+                     (uv.z < 0 && uv.x < 0 && uv.y < 0 && (uv.z - (uv.x + uv.y) < 0)));
 
         return isin;
     }

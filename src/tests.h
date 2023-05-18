@@ -2,14 +2,14 @@
 #define SIMPLE_RASTERIZER_TESTS_H
 
 #include "geometry.h"
-#include "context.h"
+#include "renderer.h"
 
 void draw_primitives_triangles(RenderContext &c)
 {
     c.color = COLOR_WHITE;
-    c.triangle_bound(10,70, 50,160, 70,80);
-    c.triangle_bound(180,50, 150,1, 70,180);
-    c.triangle_bound(180,150, 120,160, 130,180);
+    c.triangle_lined(10,70, 50,160, 70,80);
+    c.triangle_lined(180,50, 150,1, 70,180);
+    c.triangle_lined(180,150, 120,160, 130,180);
 #ifndef PROFILE
     c.color = COLOR_GREEN;
     c.line(10,70,  50,160);
