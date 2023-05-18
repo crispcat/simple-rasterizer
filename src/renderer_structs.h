@@ -3,12 +3,18 @@
 
 struct Color32
 {
+    union
+    {
+        uint32_t bits;
+        struct { uint8_t b, g, r, a; };
+    };
+
     Color32() = default;
-    union { uint32_t bits; struct { uint8_t b, g, r, a; }; };
     Color32(uint32_t bits) : bits(bits) { }
     Color32(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : b(b), g(g), r(r), a(a) { }
     Color32(Vec3Int i) : b(i.b), g(i.g), r(i.r) { }
-    Color32(Vec3Float f) : b(f.b), g(f.b), r(f.r) { }
+    Color32(Vec3Float f) : b(std::round(f.b)), g(std::round(f.b)), r(std::round(f.r)) { }
+
     operator uint32_t() const { return bits; }
     Vec3Int vec() const { return Vec3Int(r, g, b); }
     Vec3Float vecf() const { return Vec3Float(r, g, b); }

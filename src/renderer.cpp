@@ -45,6 +45,7 @@ void RenderContext::flat_light(Frag &f) const
 {
     Vec3Float n = geometry::cross(f.v[2] - f.v[0], f.v[1] - f.v[0]).normalized();
     float intensity = geometry::dot(light_dir, n);
+    intensity = intensity < 0 ? 0 : intensity;
     f.color = f.color.vecf().scale(intensity);
 }
 
