@@ -1,6 +1,6 @@
 # run params
-W = 800
-H = 800
+W = 1024
+H = 1024
 #MODEL = african_head/african_head.obj
 MODEL = diablo/diablo.obj
 
