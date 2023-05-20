@@ -37,7 +37,7 @@ void RenderContext::frag(Frag &f)
     uint32_t i = f.pix.y * h + f.pix.x;
     if (z > z_buff[i])
     {
-        gouroud_light(f);
+        fong_light(f);
         pixel(f.pix.x, f.pix.y, f.color);
         z_buff[i] = z;
     }
