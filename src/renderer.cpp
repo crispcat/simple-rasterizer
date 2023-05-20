@@ -2,12 +2,11 @@
 #include "geometry.h"
 
 RenderContext::RenderContext(uint16_t w, uint16_t h, float distance) :
-    w(w),
-    h(h),
-    z_max(distance),
-    viewport_scale_vector({(float)w / 2, (float)h / 2, 1.f }),
-    have_texture(false),
-    texture_scale_vector() {
+        w(w),
+        h(h),
+        z_max(distance),
+        viewport_scale_vector({(float)w / 2, (float)h / 2, 1.f }),
+        texture_scale_vector() {
     z_buff = new float[w * h];
     frame();
 };
@@ -23,10 +22,10 @@ void RenderContext::frame()
         z_buff[i] = -z_max;
 }
 
-void RenderContext::set_texture(TgaImage t)
+void RenderContext::set_texture(const TgaImage &t)
 {
     texture_scale_vector = Vec3Float((float)t.get_width(), (float)t.get_height(), 0.f);
-    have_texture = true;
+    use_texture = true;
     texture = t;
 }
 
@@ -46,7 +45,7 @@ void RenderContext::frag(Frag &f)
 
 void RenderContext::apply_texture(Frag &f) const
 {
-    if (!have_texture)
+    if (!use_texture)
         return;
 
     Vertex *v = f.v;

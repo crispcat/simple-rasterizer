@@ -21,11 +21,12 @@ public:
     std::vector<Vec3Int> faces {};
     Color32 fallback_color{};
     Vec3Float light_dir { 0.f, 0.f, -1.f };
+    bool use_texture{};
 
 public:
     explicit RenderContext(uint16_t w, uint16_t h, float distance);
     virtual ~RenderContext();
-    void set_texture(TgaImage t);
+    void set_texture(const TgaImage &t);
 /*
  * 2D
  * */
@@ -64,7 +65,6 @@ protected:
     Vec3Float viewport_scale_vector;
     ScreenPoint transform2screen(Vec3Float v) const;
     TgaImage texture;
-    bool have_texture;
     Vec2Float texture_scale_vector;
 /*
  * DATA
@@ -82,11 +82,7 @@ class RtContext : public RenderContext
 {
 public:
     explicit RtContext(uint32_t *f_buff, uint16_t w, uint16_t h, float dist) : RenderContext(w, h, dist), f_buff(f_buff) { }
-    void pixel(uint16_t x, uint16_t y, Color32 c) override
-    {
-        f_buff[(h - y) * w + x] = c;
-        //std::cout << x << ' ' << y << ' ' << (int)c.r << ' ' << (int)c.g << ' ' << (int)c.b << '\n';
-    }
+    void pixel(uint16_t x, uint16_t y, Color32 c) override { f_buff[(h - y) * w + x] = c; }
 private:
     uint32_t *f_buff;
 };
