@@ -19,8 +19,16 @@ public:
     std::vector<Vec3Float> uvs {};
     std::vector<Vec3Float> normals {};
     std::vector<Vec3Int> faces {};
-    Color32 color { COLOR_BLACK };
+
+protected:
+    Vec3Float pos(Vertex v) const { return vertices[v.iv]; }
+    Vec3Float normal(Vertex v) const { return normals[v.in]; }
+    Vec3Float uv(Vertex v) const { return uvs[v.iuv]; }
+
+public:
+    Color32 color;
     Vec3Float light_dir { 0.f, 0.f, -1.f };
+
 public:
     explicit RenderContext(uint16_t w, uint16_t h, float distance);
     virtual ~RenderContext();
@@ -40,13 +48,14 @@ public:
     void triangles();
     void triangles_wired();
 protected:
-    void triangle(int iv0, int iv1, int iv2);
+    void triangle(Vertex face[3]);
 /*
  * LIGHT
  * */
 protected:
-    void flat_light(Frag &f) const;
-    void gouroud_light(Frag &f) const;
+    void flat_light(Frag &f) const ;
+    void gouroud_light(Frag &f) const ;
+    void fong_light(Frag &f) const;
 /*
  * MISC
  * */
@@ -70,7 +79,11 @@ class RtContext : public RenderContext
 {
 public:
     explicit RtContext(uint32_t *f_buff, uint16_t w, uint16_t h, float dist) : RenderContext(w, h, dist), f_buff(f_buff) { }
-    void pixel(uint16_t x, uint16_t y, Color32 c) override { f_buff[(h - y) * w + x] = c; }
+    void pixel(uint16_t x, uint16_t y, Color32 c) override
+    {
+        f_buff[(h - y) * w + x] = c;
+        //std::cout << x << ' ' << y << ' ' << (int)c.r << ' ' << (int)c.g << ' ' << (int)c.b << '\n';
+    }
 private:
     uint32_t *f_buff;
 };

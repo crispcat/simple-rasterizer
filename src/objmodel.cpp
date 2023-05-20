@@ -39,7 +39,7 @@ ObjModel::ObjModel(const std::string &path)
             else if (token == "vn")
             {
                 s >> vec3f;
-                normals.push_back(vec3f);
+                normals.push_back(-vec3f);
             }
             else if (token == "f")
             {

@@ -23,15 +23,17 @@ void RenderContext::triangles_wired()
 void RenderContext::triangles()
 {
     for (size_t i = 0; i < faces.size(); i += 3)
-        triangle(faces[i].iv, faces[i + 1].iv, faces[i + 2].iv);
+    {
+        Vertex v[3] = { faces[i], faces[i + 1], faces[i + 2] };
+        triangle(v);
+    }
 }
 
-void RenderContext::triangle(int iv0, int iv1, int iv2)
+void RenderContext::triangle(Vertex v[3])
 {
-    Vec3Float    v[3] = { vertices[iv0], vertices[iv1], vertices[iv2] };
-    ScreenPoint sv[3] = { transform2screen(v[0]),
-                          transform2screen(v[1]),
-                          transform2screen(v[2]) };
+    ScreenPoint sv[3] = { transform2screen(pos(v[0])),
+                          transform2screen(pos(v[1])),
+                          transform2screen(pos(v[2])) };
     // box
     uint16_t x0 = std::min(sv[0].x, std::min(sv[1].x, sv[2].x));
     uint16_t x1 = std::max(sv[0].x, std::max(sv[1].x, sv[2].x));
@@ -48,14 +50,8 @@ void RenderContext::triangle(int iv0, int iv1, int iv2)
 
         Frag f(pix);
         f.v = v;
-        f.sv = sv;
         f.color = color;
         f.bcentr = bcentr;
-        if (have_uvs)
-            f.set_uvs({uvs[iv0], uvs[iv1], uvs[iv2]});
-        if (have_ns)
-            f.set_ns({normals[iv0], normals[iv1], normals[iv2]});
-
         frag(f);
     }
 }

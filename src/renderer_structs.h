@@ -30,31 +30,23 @@ const Color32 COLOR_WHITE =  COLOR_RED +
                              COLOR_GREEN +
                              COLOR_BLUE;
 
+typedef Vec3Int Vertex;
+
 // a potential pixel
 struct Frag
 {
     // screen pixel
     ScreenPoint pix;
-    // screen color
-    Color32 color;
     // barycentric coordinates
     Vec3Float bcentr;
-    // normal
-    Vec3Float n;
     // 3D space triangle vertices
-    Vec3Float *v;
-    // triangle vertices screen projection
-    ScreenPoint *sv;
-    // vertices normals
-    Vec3Float *ns;
-    // vertices UVs
-    Vec3Float *uvs;
+    Vertex *v;
+    // color
+    Color32 color;
     //
     Frag() = delete;
-    explicit Frag(ScreenPoint &pix) : pix(std::move(pix)) { }
+    explicit Frag(ScreenPoint &pix)  : pix(std::move(pix)) { }
     explicit Frag(ScreenPoint &&pix) : pix(std::move(pix)) { }
-    void set_uvs(Vec3Float (&&_uvs)[3]) { uvs = std::move(_uvs); }
-    void set_ns(Vec3Float (&&_ns)[3]) { ns = std::move(_ns); }
 };
 
 struct ScreenLine

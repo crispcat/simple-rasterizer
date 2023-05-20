@@ -24,6 +24,7 @@ template<class T> struct Vector2
     void operator += (Vector2<T> v) { x += v.x; y += v.y; }
     void operator -= (Vector2<T> v) { x -= v.x; y -= v.y; }
 
+    Vector2<T> operator - () const { return Vector2<T>(-x, -y); }
     Vector2<T> scale(T s) const { return Vector2<T>(x * s, y * s); }
     Vector2<T> scale(T sx, T sy) const { return Vector2<T>(x * sx, y * sy); }
     Vector2<T> scale(Vector2<T> s) const { return Vector2<T>(x * s.x, y * s.y); }
@@ -52,6 +53,7 @@ template<class T> struct Vector3
 
     T operator[](size_t i) { return raw[i]; }
 
+    Vector3<T> operator - () const { return Vector3<T>(-x, -y, -z); }
     Vector3<T> operator + (const Vector3<T> v) const { return Vector3<T>(x + v.x, y + v.y, z + v.z); }
     Vector3<T> operator - (const Vector3<T> v) const { return Vector3<T>(x - v.x, y - v.y, z - v.z); }
 

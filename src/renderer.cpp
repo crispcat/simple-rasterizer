@@ -32,11 +32,12 @@ void RenderContext::frame()
 
 void RenderContext::frag(Frag &f)
 {
-    float z = geometry::dot(f.bcentr, { f.v[0].z, f.v[1].z, f.v[2].z });
+    Vertex *v = f.v;
+    float z = geometry::dot(f.bcentr, { pos(v[0]).z, pos(v[1]).z, pos(v[2]).z });
     uint32_t i = f.pix.y * h + f.pix.x;
     if (z > z_buff[i])
     {
-        flat_light(f);
+        gouroud_light(f);
         pixel(f.pix.x, f.pix.y, f.color);
         z_buff[i] = z;
     }
@@ -44,17 +45,29 @@ void RenderContext::frag(Frag &f)
 
 void RenderContext::flat_light(Frag &f) const
 {
-    Vec3Float n = geometry::cross(f.v[2] - f.v[0], f.v[1] - f.v[0]).normalized();
+    Vertex *v = f.v;
+    Vec3Float n = geometry::cross(pos(v[2]) - pos(v[0]), pos(v[1]) - pos(v[0])).normalized();
     float l = calc::clamp0(geometry::dot(light_dir, n));
     f.color = f.color.vecf().scale(l);
 }
 
 void RenderContext::gouroud_light(Frag &f) const
 {
-    float l0 = calc::clamp0(geometry::dot(light_dir, f.ns[0]));
-    float l1 = calc::clamp0(geometry::dot(light_dir, f.ns[1]));
-    float l2 = calc::clamp0(geometry::dot(light_dir, f.ns[2]));
+    Vertex *v = f.v;
+    float l0 = calc::clamp0(geometry::dot(light_dir, normal(v[0])));
+    float l1 = calc::clamp0(geometry::dot(light_dir, normal(v[1])));
+    float l2 = calc::clamp0(geometry::dot(light_dir, normal(v[2])));
     float l = geometry::dot(f.bcentr, { l0, l1, l2 });
+    f.color = f.color.vecf().scale(l);
+}
+
+void RenderContext::fong_light(Frag &f) const
+{
+    Vertex *v = f.v;
+    Vec3Float n = { geometry::dot(f.bcentr, { normal(v[0]).x, normal(v[1]).x, normal(v[2]).x }),
+                    geometry::dot(f.bcentr, { normal(v[0]).y, normal(v[1]).y, normal(v[2]).y }),
+                    geometry::dot(f.bcentr, { normal(v[0]).z, normal(v[1]).z, normal(v[2]).z })};
+    float l = calc::clamp0(geometry::dot(light_dir, n));
     f.color = f.color.vecf().scale(l);
 }
 
@@ -63,5 +76,4 @@ ScreenPoint RenderContext::transform2screen(Vec3Float v) const
     Vec3Float sv = (v + Vec3FloatOne).scale(scale_vector);
     return {(uint16_t)sv.x, (uint16_t)sv.y};
 }
-
 
