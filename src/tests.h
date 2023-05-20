@@ -6,12 +6,12 @@
 
 void draw_primitives_triangles(RenderContext &c)
 {
-    c.color = COLOR_WHITE;
+    c.fallback_color = COLOR_WHITE;
     c.triangle_lined(10,70, 50,160, 70,80);
     c.triangle_lined(180,50, 150,1, 70,180);
     c.triangle_lined(180,150, 120,160, 130,180);
 #ifndef PROFILE
-    c.color = COLOR_GREEN;
+    c.fallback_color = COLOR_GREEN;
     c.line(10,70,  50,160);
     c.line(50,160, 70,80);
     c.line(10,70,  70,80);
@@ -26,13 +26,13 @@ void draw_primitives_triangles(RenderContext &c)
 
 void draw_primitives_lines(RenderContext &c)
 {
-    c.color = COLOR_GREEN;
+    c.fallback_color = COLOR_GREEN;
     c.line(50, 50, 75, 75);
     c.line(50, 50, 75, 25);
     c.line(50, 50, 25, 25);
     c.line(50, 50, 25, 75);
 
-    c.color = COLOR_RED;
+    c.fallback_color = COLOR_RED;
     c.line(50, 50, 75, 85);
     c.line(50, 50, 75, 65);
     c.line(50, 50, 75, 35);
@@ -42,7 +42,7 @@ void draw_primitives_lines(RenderContext &c)
     c.line(50, 50, 25, 65);
     c.line(50, 50, 25, 85);
 
-    c.color = COLOR_WHITE;
+    c.fallback_color = COLOR_WHITE;
     c.line(50, 50, 75, 50);
     c.line(50, 50, 50, 25);
     c.line(50, 50, 25, 50);

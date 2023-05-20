@@ -60,14 +60,15 @@ int main(int argc, char **argv)
 
 void draw_model(RenderContext &c, const ObjModel &m)
 {
-    c.color = COLOR_WHITE;
+    c.fallback_color = COLOR_RED;
+    c.set_texture(m.texture);
     c.vertices = m.vertices;
     c.normals = m.normals;
     c.faces = m.faces;
     c.uvs = m.uvs;
     c.triangles();
-//    color.color = COLOR_GREEN;
-//    color.triangles_wired();
-//    color.color = COLOR_RED;
-//    color.points();
+//    fallback_color.fallback_color = COLOR_GREEN;
+//    fallback_color.triangles_wired();
+//    fallback_color.fallback_color = COLOR_RED;
+//    fallback_color.points();
 }

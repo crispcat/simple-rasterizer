@@ -2,15 +2,14 @@
 #include "geometry.h"
 
 RenderContext::RenderContext(uint16_t w, uint16_t h, float distance) :
-        w(w),
-        h(h),
-        z_max(distance),
-        have_ns(true),
-        have_uvs(true),
-        viewport_scale_vector({(float)w / 2, (float)h / 2, 1.f }) {
+    w(w),
+    h(h),
+    z_max(distance),
+    viewport_scale_vector({(float)w / 2, (float)h / 2, 1.f }),
+    have_texture(false),
+    texture_scale_vector() {
     z_buff = new float[w * h];
-    for (uint32_t i = 0; i < w * h; i++)
-        z_buff[i] = -z_max;
+    frame();
 };
 
 RenderContext::~RenderContext()
@@ -22,12 +21,13 @@ void RenderContext::frame()
 {
     for (uint32_t i = 0; i < w * h; i++)
         z_buff[i] = -z_max;
+}
 
-    if (uvs.empty())
-        have_uvs = false;
-
-    if (normals.empty())
-        have_ns = false;
+void RenderContext::set_texture(TgaImage t)
+{
+    texture_scale_vector = Vec3Float((float)t.get_width(), (float)t.get_height(), 0.f);
+    have_texture = true;
+    texture = t;
 }
 
 void RenderContext::frag(Frag &f)
@@ -38,7 +38,7 @@ void RenderContext::frag(Frag &f)
     if (z > z_buff[i])
     {
         apply_texture(f);
-        flat_light(f);
+        gouroud_light(f);
         pixel(f.pix.x, f.pix.y, f.color);
         z_buff[i] = z;
     }
@@ -46,13 +46,14 @@ void RenderContext::frag(Frag &f)
 
 void RenderContext::apply_texture(Frag &f) const
 {
+    if (!have_texture)
+        return;
 
-}
-
-Color32 RenderContext::texture_pixel(Vec3Float uv)
-{
-    Vec2Int tcoord = uv.scale(texture_scale_vector).apply(std::round);
-    return 0;
+    Vertex *v = f.v;
+    float pu = geometry::dot(f.bcentr, { uv(v[0]).u, uv(v[1]).u, uv(v[2]).u });
+    float pv = geometry::dot(f.bcentr, { uv(v[0]).v, uv(v[1]).v, uv(v[2]).v });
+    Vec2Int tcoord = Vec2Float(pu, pv).scale(texture_scale_vector).apply(std::round);
+    f.color = texture.get(tcoord.u, tcoord.v).val;
 }
 
 void RenderContext::flat_light(Frag &f) const

@@ -1,7 +1,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
+#include <filesystem>
 #include "objmodel.h"
 
 ObjModel::ObjModel(const std::string &path)
@@ -19,6 +19,7 @@ ObjModel::ObjModel(const std::string &path)
     std::string token;
     int lineCount = 0;
     Vec3Float vec3f;
+    Vec2Float vec2f;
     while (!in.eof())
     {
         lineCount++;
@@ -33,8 +34,8 @@ ObjModel::ObjModel(const std::string &path)
             }
             else if (token == "vt")
             {
-                s >> vec3f;
-                uvs.push_back(vec3f);
+                s >> vec2f;
+                uvs.push_back(vec2f);
             }
             else if (token == "vn")
             {
@@ -44,6 +45,14 @@ ObjModel::ObjModel(const std::string &path)
             else if (token == "f")
             {
                 parse_face_vertx(s);
+            }
+            else if (token == "#texture")
+            {
+                s >> token;
+                auto p = std::filesystem::path(path).parent_path().append(token).string();
+                texture.read_tga_file(p.c_str());
+                texture.flip_vertically();
+                std::cout << "\tTexture " << p << " loaded. Size " << texture.get_width() << 'x' << texture.get_height() << ".\n";
             }
             else
             {

@@ -108,7 +108,7 @@ bool TgaImage::read_tga_file(const char *filename)
     {
         flip_horizontally();
     }
-    std::cerr << width << "x" << height << "/" << bytespp * 8 << "\n";
+    //std::cerr << width << "x" << height << "/" << bytespp * 8 << "\n";
     in.close();
     return true;
 }
@@ -296,7 +296,7 @@ bool TgaImage::unload_rle_data(std::ofstream &out)
     return true;
 }
 
-TGAColor TgaImage::get(int x, int y)
+TGAColor TgaImage::get(int x, int y) const
 {
     if (!data || x < 0 || y < 0 || x >= width || y >= height)
     {
@@ -315,17 +315,17 @@ bool TgaImage::set(int x, int y, TGAColor c)
     return true;
 }
 
-int TgaImage::get_bytespp()
+int TgaImage::get_bytespp() const
 {
     return bytespp;
 }
 
-int TgaImage::get_width()
+int TgaImage::get_width() const
 {
     return width;
 }
 
-int TgaImage::get_height()
+int TgaImage::get_height() const
 {
     return height;
 }

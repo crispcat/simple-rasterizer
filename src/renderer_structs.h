@@ -21,7 +21,6 @@ struct Color32
     Vec3Float norm() const { return Vec3Float(r, g, b).scale(1.f / 255); }
 };
 
-const Color32 COLOR_FALLBACK (0xffc0cb);
 const Color32 COLOR_BLACK    (0x000000);
 const Color32 COLOR_RED      (0xfa0000);
 const Color32 COLOR_GREEN    (0x00fa00);
@@ -41,7 +40,7 @@ struct Frag
     Vec3Float bcentr;
     // 3D space triangle vertices
     Vertex *v;
-    // color
+    // fallback_color
     Color32 color;
     //
     Frag() = delete;

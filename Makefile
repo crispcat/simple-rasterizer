@@ -1,6 +1,6 @@
 # make params
 COMPILER = clang++
-CPPFLAGS = -std=c++14
+CXXFLAGS = -std=c++17
 LDFLAGS  =
 LIBS     = -lm -lX11
 DST_DIR  = bin/
@@ -21,12 +21,12 @@ RESOURCES := $(patsubst $(RES_DIR)%, $(DST_DIR)%, $(wildcard $(RES)))
 all: release debug
 
 .depend_release:
-	$(COMPILER) $(CPPFLAGS) $(CFLAGS) -MM $(wildcard $(SRC)) > .depend_release
+	$(COMPILER) $(CXXFLAGS) -MM $(wildcard $(SRC)) > .depend_release
 	awk -i inplace '{ORS = /\\/? "": RS; sub(/\\$$/, ""); print}' .depend_release
 	sed -i -e "s/^/obj\/release\//" .depend_release
 
 .depend_debug:
-	$(COMPILER) $(CPPFLAGS) $(CFLAGS) -MM $(wildcard $(SRC)) > .depend_debug
+	$(COMPILER) $(CXXFLAGS) -MM $(wildcard $(SRC)) > .depend_debug
 	awk -i inplace '{ORS = /\\/? "": RS; sub(/\\$$/, ""); print}' .depend_debug
 	sed -i -e "s/^/obj\/debug\//" .depend_debug
 
@@ -34,11 +34,11 @@ include .depend_release
 include .depend_debug
 
 release: LDFLAGS += -s
-release: CPPFLAGS += -O3 -D RELEASE
+release: CXXFLAGS += -O3 -D RELEASE
 release: $(DST_DIR)$(TARGET_RELEASE) $(RESOURCES)
 
 debug: LDFLAGS += -g -ggdb -pg
-debug: CPPFLAGS += -g -ggdb -pg -O0 -D DEBUG -D PROFILE
+debug: CXXFLAGS += -g -ggdb -pg -O0 -D DEBUG -D PROFILE
 debug: $(DST_DIR)$(TARGET_DEBUG) $(RESOURCES)
 
 $(DST_DIR)$(TARGET_RELEASE): $(OBJ_RELEASE)
@@ -51,11 +51,11 @@ $(DST_DIR)$(TARGET_DEBUG): $(OBJ_DEBUG)
 
 $(OBJ_DIR)release/%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
-	$(COMPILER) -Wall $(CPPFLAGS) -c $(CFLAGS) $< -o $@
+	$(COMPILER) -Wall $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR)debug/%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
-	$(COMPILER) -Wall $(CPPFLAGS) -c $(CFLAGS) $< -o $@
+	$(COMPILER) -Wall $(CXXFLAGS) -c $< -o $@
 
 $(RESOURCES): $(DST_DIR)%: $(RES_DIR)%
 	rsync --mkpath -ar $< $@

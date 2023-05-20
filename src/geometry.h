@@ -139,7 +139,7 @@ namespace geometry
                  a.x * b.y - a.y * b.x };
     }
 
-    //  barycentric_screen coordinates are the weights of linear combination of geometry representing a point
+    //  barycentric coordinates is linear combination of the face vectors with weights to get a point
     //  inside a polygon.
     //
     //  P = (1 - u - v) * A + u*B + v*C

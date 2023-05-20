@@ -76,7 +76,7 @@ struct TGAColor
 
 class TgaImage
 {
-protected:
+public:
     unsigned char *data;
     int width;
     int height;
@@ -108,7 +108,7 @@ public:
 
     bool scale(int w, int h);
 
-    TGAColor get(int x, int y);
+    TGAColor get(int x, int y) const;
 
     bool set(int x, int y, TGAColor c);
 
@@ -116,11 +116,11 @@ public:
 
     TgaImage &operator=(const TgaImage &img);
 
-    int get_width();
+    int get_width() const;
 
-    int get_height();
+    int get_height() const;
 
-    int get_bytespp();
+    int get_bytespp() const;
 
     unsigned char *buffer();
 

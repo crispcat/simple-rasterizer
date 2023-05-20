@@ -16,24 +16,16 @@ class RenderContext
  * */
 public:
     std::vector<Vec3Float> vertices {};
-    std::vector<Vec3Float> uvs {};
+    std::vector<Vec2Float> uvs {};
     std::vector<Vec3Float> normals {};
     std::vector<Vec3Int> faces {};
-    TgaImage texture;
-
-protected:
-    Vec3Float pos(Vertex v) const { return vertices[v.iv]; }
-    Vec3Float normal(Vertex v) const { return normals[v.in]; }
-    Vec3Float uv(Vertex v) const { return uvs[v.iuv]; }
-    Color32 texture_pixel(Vec3Float uv);
-
-public:
-    Color32 color;
+    Color32 fallback_color{};
     Vec3Float light_dir { 0.f, 0.f, -1.f };
 
 public:
     explicit RenderContext(uint16_t w, uint16_t h, float distance);
     virtual ~RenderContext();
+    void set_texture(TgaImage t);
 /*
  * 2D
  * */
@@ -67,13 +59,20 @@ protected:
     uint16_t h;
     float z_max;
     float *z_buff;
-    bool have_ns;
-    bool have_uvs;
     void frag(Frag &f);
     virtual void pixel(uint16_t x, uint16_t y, Color32 c) = 0;
     Vec3Float viewport_scale_vector;
     ScreenPoint transform2screen(Vec3Float v) const;
-    Vec3Float texture_scale_vector;
+    TgaImage texture;
+    bool have_texture;
+    Vec2Float texture_scale_vector;
+/*
+ * DATA
+ * */
+protected:
+    Vec3Float pos(Vertex v) const { return vertices[v.iv]; }
+    Vec3Float normal(Vertex v) const { return normals[v.in]; }
+    Vec2Float uv(Vertex v) const { return uvs[v.iuv]; }
 };
 
 /*

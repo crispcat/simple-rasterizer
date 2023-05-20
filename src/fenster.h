@@ -57,10 +57,10 @@ FENSTER_API int64_t fenster_time();
   ((r(*)(id, SEL, A))objc_msgSend)(o, sel_getUid(s), a)
 #define msg2(r, o, s, A, a, B, b)                                              \
   ((r(*)(id, SEL, A, B))objc_msgSend)(o, sel_getUid(s), a, b)
-#define msg3(r, o, s, A, a, B, b, C, color)                                        \
-  ((r(*)(id, SEL, A, B, C))objc_msgSend)(o, sel_getUid(s), a, b, color)
-#define msg4(r, o, s, A, a, B, b, C, color, D, d)                                  \
-  ((r(*)(id, SEL, A, B, C, D))objc_msgSend)(o, sel_getUid(s), a, b, color, d)
+#define msg3(r, o, s, A, a, B, b, C, fallback_color)                                        \
+  ((r(*)(id, SEL, A, B, C))objc_msgSend)(o, sel_getUid(s), a, b, fallback_color)
+#define msg4(r, o, s, A, a, B, b, C, fallback_color, D, d)                                  \
+  ((r(*)(id, SEL, A, B, C, D))objc_msgSend)(o, sel_getUid(s), a, b, fallback_color, d)
 
 #define cls(x) ((id)objc_getClass(x))
 
@@ -102,15 +102,15 @@ FENSTER_API int fenster_open(struct fenster *f) {
   Class windelegate =
       objc_allocateClassPair((Class)cls("NSObject"), "FensterDelegate", 0);
   class_addMethod(windelegate, sel_getUid("windowShouldClose:"),
-                  (IMP)fenster_should_close, "color@:@");
+                  (IMP)fenster_should_close, "fallback_color@:@");
   objc_registerClassPair(windelegate);
   msg1(void, f->wnd, "setDelegate:", id,
        msg(id, msg(id, (id)windelegate, "alloc"), "init"));
-  Class color = objc_allocateClassPair((Class)cls("NSView"), "FensterView", 0);
-  class_addMethod(color, sel_getUid("drawRect:"), (IMP)fenster_draw_rect, "i@:@@");
-  objc_registerClassPair(color);
+  Class fallback_color = objc_allocateClassPair((Class)cls("NSView"), "FensterView", 0);
+  class_addMethod(fallback_color, sel_getUid("drawRect:"), (IMP)fenster_draw_rect, "i@:@@");
+  objc_registerClassPair(fallback_color);
 
-  id v = msg(id, msg(id, (id)color, "alloc"), "init");
+  id v = msg(id, msg(id, (id)fallback_color, "alloc"), "init");
   msg1(void, f->wnd, "setContentView:", id, v);
   objc_setAssociatedObject(v, "fenster", (id)f, OBJC_ASSOCIATION_ASSIGN);
 

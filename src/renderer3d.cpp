@@ -5,7 +5,7 @@ void RenderContext::points()
     for (Vec3Int &face : faces)
     {
         ScreenPoint p = transform2screen(vertices[face.iv]);
-        pixel(p.x, p.y, color);
+        pixel(p.x, p.y, fallback_color);
     }
 }
 
@@ -50,7 +50,7 @@ void RenderContext::triangle(Vertex v[3])
 
         Frag f(pix);
         f.v = v;
-        f.color = color;
+        f.color = fallback_color;
         f.bcentr = bcentr;
         frag(f);
     }
