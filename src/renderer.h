@@ -19,11 +19,13 @@ public:
     std::vector<Vec3Float> uvs {};
     std::vector<Vec3Float> normals {};
     std::vector<Vec3Int> faces {};
+    TgaImage texture;
 
 protected:
     Vec3Float pos(Vertex v) const { return vertices[v.iv]; }
     Vec3Float normal(Vertex v) const { return normals[v.in]; }
     Vec3Float uv(Vertex v) const { return uvs[v.iuv]; }
+    Color32 texture_pixel(Vec3Float uv);
 
 public:
     Color32 color;
@@ -53,6 +55,7 @@ protected:
  * LIGHT
  * */
 protected:
+    void apply_texture(Frag &f) const;
     void flat_light(Frag &f) const ;
     void gouroud_light(Frag &f) const ;
     void fong_light(Frag &f) const;
@@ -68,8 +71,9 @@ protected:
     bool have_uvs;
     void frag(Frag &f);
     virtual void pixel(uint16_t x, uint16_t y, Color32 c) = 0;
-    Vec3Float scale_vector;
+    Vec3Float viewport_scale_vector;
     ScreenPoint transform2screen(Vec3Float v) const;
+    Vec3Float texture_scale_vector;
 };
 
 /*

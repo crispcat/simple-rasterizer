@@ -12,10 +12,11 @@ TARGET_RELEASE  = simple-rasterizer
 TARGET_DEBUG    = simple-rasterizer-debug
 
 SRC := $(shell find $(SRC_DIR) -type f -name '*.cpp')
-RES := $(patsubst %, $(DST_DIR)%, $(notdir $(wildcard $(RES_DIR)*)))
+RES := $(shell find $(RES_DIR) -type f -name '*')
 
 OBJ_RELEASE := $(patsubst %.cpp, $(OBJ_DIR)release/%.o, $(patsubst $(SRC_DIR)%, %, $(wildcard $(SRC))))
 OBJ_DEBUG := $(patsubst %.cpp, $(OBJ_DIR)debug/%.o, $(patsubst $(SRC_DIR)%, %, $(wildcard $(SRC))))
+RESOURCES := $(patsubst $(RES_DIR)%, $(DST_DIR)%, $(wildcard $(RES)))
 
 all: release debug
 
@@ -34,11 +35,11 @@ include .depend_debug
 
 release: LDFLAGS += -s
 release: CPPFLAGS += -O3 -D RELEASE
-release: $(DST_DIR)$(TARGET_RELEASE) $(RES)
+release: $(DST_DIR)$(TARGET_RELEASE) $(RESOURCES)
 
 debug: LDFLAGS += -g -ggdb -pg
 debug: CPPFLAGS += -g -ggdb -pg -O0 -D DEBUG -D PROFILE
-debug: $(DST_DIR)$(TARGET_DEBUG) $(RES)
+debug: $(DST_DIR)$(TARGET_DEBUG) $(RESOURCES)
 
 $(DST_DIR)$(TARGET_RELEASE): $(OBJ_RELEASE)
 	mkdir -p $(@D)
@@ -56,7 +57,7 @@ $(OBJ_DIR)debug/%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
 	$(COMPILER) -Wall $(CPPFLAGS) -c $(CFLAGS) $< -o $@
 
-$(RES): $(DST_DIR)%: $(RES_DIR)%
+$(RESOURCES): $(DST_DIR)%: $(RES_DIR)%
 	rsync --mkpath -ar $< $@
 
 .PHONY: clean

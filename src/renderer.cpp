@@ -2,12 +2,12 @@
 #include "geometry.h"
 
 RenderContext::RenderContext(uint16_t w, uint16_t h, float distance) :
-    w(w),
-    h(h),
-    z_max(distance),
-    have_ns(true),
-    have_uvs(true),
-    scale_vector({(float)w / 2, (float)h / 2, 1.f }) {
+        w(w),
+        h(h),
+        z_max(distance),
+        have_ns(true),
+        have_uvs(true),
+        viewport_scale_vector({(float)w / 2, (float)h / 2, 1.f }) {
     z_buff = new float[w * h];
     for (uint32_t i = 0; i < w * h; i++)
         z_buff[i] = -z_max;
@@ -37,10 +37,22 @@ void RenderContext::frag(Frag &f)
     uint32_t i = f.pix.y * h + f.pix.x;
     if (z > z_buff[i])
     {
-        fong_light(f);
+        apply_texture(f);
+        flat_light(f);
         pixel(f.pix.x, f.pix.y, f.color);
         z_buff[i] = z;
     }
+}
+
+void RenderContext::apply_texture(Frag &f) const
+{
+
+}
+
+Color32 RenderContext::texture_pixel(Vec3Float uv)
+{
+    Vec2Int tcoord = uv.scale(texture_scale_vector).apply(std::round);
+    return 0;
 }
 
 void RenderContext::flat_light(Frag &f) const
@@ -73,7 +85,7 @@ void RenderContext::fong_light(Frag &f) const
 
 ScreenPoint RenderContext::transform2screen(Vec3Float v) const
 {
-    Vec3Float sv = (v + Vec3FloatOne).scale(scale_vector);
-    return {(uint16_t)sv.x, (uint16_t)sv.y};
+    Vec3Float sv = (v + Vec3FloatOne).scale(viewport_scale_vector).apply(std::round);
+    return (ScreenPoint) sv;
 }
 

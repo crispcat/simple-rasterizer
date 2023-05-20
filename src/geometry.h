@@ -4,6 +4,8 @@
 #include <cmath>
 #include <iostream>
 
+template<class T> struct Vector3;
+
 template<class T> struct Vector2
 {
     union
@@ -31,9 +33,12 @@ template<class T> struct Vector2
 
     float_t norm() const { return std::sqrt(sqnorm()); }
     T sqnorm() const { return x * x + y * y; }
-
     Vector2<float> normalized() const { auto n = norm(); return Vector2<float>(x / n, y / n); }
 
+    operator Vector3<T>() { return Vector3<T>(x, y); }
+    Vector2<T> apply(T (*a)(T)) { return Vector2<T>(a(x), a(y)); }
+    template<class V> operator Vector2<V>() { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
+    template<class V> operator Vector3<V>() { return Vector2<V>(static_cast<V>(x), static_cast<V>(y), T{}); }
     template<class> friend std::ostream& operator << (std::ostream &s, Vector2<T> v);
     template<class> friend std::istream& operator >> (std::istream &s, Vector2<T> &v);
 };
@@ -68,6 +73,10 @@ template<class T> struct Vector3
     T sqnorm() const { return x * x + y * y + z * z; }
     Vector3<float> normalized() const { auto n = norm(); return Vector3<float>(x / n, y / n, z / n); }
 
+    operator Vector2<T>() { return Vector2<T>(x, y); }
+    Vector3<T> apply(T (*a)(T)) { return Vector3<T>(a(x), a(y), a(z)); }
+    template<class V> operator Vector3<V>() { return Vector3<V>(static_cast<V>(x), static_cast<V>(y), static_cast<V>(z)); }
+    template<class V> operator Vector2<V>() { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
     template<class> friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
     template<class> friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
 };

@@ -1,7 +1,7 @@
 # run params
 W = 800
 H = 800
-MODEL = diablo.obj
+MODEL = african_head/african_head.obj
 
 .PHONY: run render tests profile
 
