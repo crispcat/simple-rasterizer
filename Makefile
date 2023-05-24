@@ -1,6 +1,6 @@
 # make params
 COMPILER = clang++
-CXXFLAGS = -std=c++17
+CXXFLAGS = -std=c++20
 LDFLAGS  =
 LIBS     = -lm -lX11
 DST_DIR  = bin/

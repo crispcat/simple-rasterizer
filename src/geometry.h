@@ -4,9 +4,12 @@
 #include <cmath>
 #include <iostream>
 
+template<class T> struct Vector2;
 template<class T> struct Vector3;
+template<size_t N, size_t M, class T> struct Matrix;
 
-template<class T> struct Vector2
+template<class T>
+struct Vector2
 {
     union
     {
@@ -16,7 +19,8 @@ template<class T> struct Vector2
     };
 
     Vector2() = default;
-    Vector2(T x, T y) : x(x), y(y) {}
+    Vector2(T x, T y) : x(x), y(y) { }
+    explicit Vector2(T raw[2]) : raw(raw) { }
 
     T operator[](size_t i) { return raw[i]; }
 
@@ -37,13 +41,20 @@ template<class T> struct Vector2
 
     operator Vector3<T>() { return Vector3<T>(x, y); }
     Vector2<T> apply(T (*a)(T)) { return Vector2<T>(a(x), a(y)); }
-    template<class V> operator Vector2<V>() { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
-    template<class V> operator Vector3<V>() { return Vector2<V>(static_cast<V>(x), static_cast<V>(y), T{}); }
-    template<class> friend std::ostream& operator << (std::ostream &s, Vector2<T> v);
-    template<class> friend std::istream& operator >> (std::istream &s, Vector2<T> &v);
+
+    template<class V>
+    operator Vector2<V>() { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
+    template<class V>
+    operator Vector3<V>() { return Vector3<V>(static_cast<V>(x), static_cast<V>(y), T{}); }
+
+    template<class>
+    friend std::ostream& operator << (std::ostream &s, Vector2<T> v);
+    template<class>
+    friend std::istream& operator >> (std::istream &s, Vector2<T> &v);
 };
 
-template<class T> struct Vector3
+template<class T>
+struct Vector3
 {
     union
     {
@@ -54,7 +65,8 @@ template<class T> struct Vector3
     };
 
     Vector3() = default;
-    Vector3(T x, T y, T z) : x(x), y(y), z(z) {}
+    Vector3(T x, T y, T z) : x(x), y(y), z(z) { }
+    explicit Vector3(T raw[3]) : raw(raw) { }
 
     T operator[](size_t i) { return raw[i]; }
 
@@ -73,54 +85,41 @@ template<class T> struct Vector3
     T sqnorm() const { return x * x + y * y + z * z; }
     Vector3<float> normalized() const { auto n = norm(); return Vector3<float>(x / n, y / n, z / n); }
 
-    operator Vector2<T>() { return Vector2<T>(x, y); }
-    Vector3<T> apply(T (*a)(T)) { return Vector3<T>(a(x), a(y), a(z)); }
-    template<class V> operator Vector3<V>() { return Vector3<V>(static_cast<V>(x), static_cast<V>(y), static_cast<V>(z)); }
-    template<class V> operator Vector2<V>() { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
-    template<class> friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
-    template<class> friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
+    operator Vector2<T>() const { return Vector2<T>(x, y); }
+    Vector3<T> apply(T (*a)(T)) const { return Vector3<T>(a(x), a(y), a(z)); }
+
+    template<class V>
+    operator Vector3<V>() const { return Vector3<V>(static_cast<V>(x), static_cast<V>(y), static_cast<V>(z)); }
+    template<class V>
+    operator Vector2<V>() const { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
+
+    template<class>
+    friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
+    template<class>
+    friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
 };
 
-typedef Vector2 <int> Vec2Int;
-typedef Vector3 <int> Vec3Int;
-typedef Vector2 <float> Vec2Float;
-typedef Vector3 <float> Vec3Float;
-typedef Vector2 <uint16_t> ScreenPoint;
+using Vec2 = Vector2<float>;
+using Vec3 = Vector3<float>;
+using Vec2Int = Vector2<int>;
+using Vec3Int = Vector3<int>;
+using ScreenPoint = Vector2<uint16_t>;
 
+const Vec2 Vec2One(1.f, 1.f);
+const Vec3 Vec3One(1.f, 1.f, 1.f);
 const Vec2Int Vec2IntOne(1, 1);
 const Vec3Int Vec3IntOne(1, 1, 1);
 
-const Vec2Float Vec2FloatOne(1.f, 1.f);
-const Vec3Float Vec3FloatOne(1.f, 1.f, 1.f);
-
-template<class T> std::ostream& operator << (std::ostream &s, Vector2<T> v)
-{
-    return s << "(" << v.x << ", " << v.y << ")";
-}
-
-template<class T> std::istream& operator >> (std::istream &s, Vector2<T> &v)
-{
-    return s >> v.x >> v.y;
-}
-
-template<class T> std::ostream& operator << (std::ostream &s, Vector3<T> v)
-{
-    return s << "(" << v.x << ", " << v.y << ", " << v.z << ")";
-}
-
-template<class T> std::istream& operator >> (std::istream &s, Vector3<T> &v)
-{
-    return s >> v.x >> v.y >> v.z;
-}
-
 namespace geometry
 {
-    template<class T> T dot(Vector2<T> a, Vector2<T> b)
+    template<class T>
+    T dot(Vector2<T> a, Vector2<T> b)
     {
         return a.x * b.x + a.y * b.y;
     }
 
-    template<class T> T dot(Vector3<T> a, Vector3<T> b)
+    template<class T>
+    T dot(Vector3<T> a, Vector3<T> b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
@@ -132,15 +131,16 @@ namespace geometry
     //  a.y * b.z - a.z * b.y = x
     //  a.z * b.x - a.x * b.z = y
     //  a.x * b.y - a.y * b.x = z
-    template<class T> Vector3<T> cross(Vector3<T> a, Vector3<T> b)
+    template<class T>
+    Vector3<T> cross(Vector3<T> a, Vector3<T> b)
     {
         return { a.y * b.z - a.z * b.y,
                  a.z * b.x - a.x * b.z,
                  a.x * b.y - a.y * b.x };
     }
 
-    //  barycentric coordinates is linear combination of the face vectors with weights to get a point
-    //  inside a polygon.
+    //  barycentric coordinates is linear combination of the face vectors with weights
+    //  representing a point inside a polygon.
     //
     //  P = (1 - u - v) * A + u*B + v*C
     //  P = A + u*AB + v*AC
@@ -154,28 +154,109 @@ namespace geometry
     //
     //  (u, v, 1) = (AB(x), AC(x), PA(x)) cross (AB(y), AC(y), PA(y))
     //
-    inline Vec3Float barycentric_screen(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint c)
+    inline Vec3 barycentric_screen(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint c)
     {
         Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, p.x - a.x),
                            Vec3Int(b.y - a.y, c.y - a.y, p.y - a.y));
         if (uv.z == 0)
             return {-1, 1, 1};
 
-        // normal is actually flipped so z coordinate will be negative
+        // norm is actually flipped, so z coordinate will be negative
         return { 1.f - (float)(uv.x + uv.y) / -uv.z, (float)uv.x / -uv.z, (float)uv.y / -uv.z };
     }
+}
 
-    // it is a little bit faster (~15%) than calc the exact barycentric_screen coordinates
-    inline bool is_in_triangle_screen(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint c)
+template </*ROWS*/size_t N,/*COLS*/size_t M, class T>
+struct Matrix
+{
+    static const size_t SIZE = N * M;
+
+    T el[SIZE];
+
+    Matrix() : el { 0 } { }
+
+    explicit Matrix(T arr[SIZE]) : el { 0 }
     {
-        Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, p.x - a.x),
-                           Vec3Int(b.y - a.y, c.y - a.y, p.y - a.y));
-        uv.z = -uv.z;
-        bool isin = (uv.z != 0) &&
-                    ((uv.z > 0 && uv.x > 0 && uv.y > 0 && (uv.z - (uv.x + uv.y) > 0)) ||
-                     (uv.z < 0 && uv.x < 0 && uv.y < 0 && (uv.z - (uv.x + uv.y) < 0)));
+        std::copy(arr, arr + SIZE, el);
+    }
 
-        return isin;
+    Matrix(std::initializer_list<T> il) : el { 0 }
+    {
+        std::move(il.begin(), il.end(), el);
+    }
+
+    T* operator [] (size_t i)
+    {
+        return el + i * M;
+    }
+
+    void operator += (Matrix<N, M, T> m)
+    {
+        for (size_t i = 0; i < SIZE; i++)
+            el[i] += m.el[i];
+    }
+
+    void operator -= (Matrix<N, M, T> m)
+    {
+        for (size_t i = 0; i < SIZE; i++)
+            el[i] -= m.el[i];
+    }
+
+    Matrix<N, M, T> operator + (Matrix<N, M, T> m) const
+    {
+        Matrix<N, M, T> res;
+        for (size_t i = 0; i < SIZE; i++)
+            res[i] = el[i] + m.el[i];
+        return res;
+    }
+
+    Matrix<N, M, T> operator - (Matrix<N, M, T> m) const
+    {
+        Matrix<N, M, T> res;
+        for (size_t i = 0; i < SIZE; i++)
+            res[i] = el[i] - m.el[i];
+        return res;
+    }
+
+    template<size_t L>
+    Matrix<N, L, T> operator * (Matrix<M, L, T> m) const
+    {
+        Matrix<N, L, T> res;
+        for (size_t i = 0; i < N * L; i++)
+            for (size_t j = 0; j < M; j++)
+                res.el[i] += el[(i / L) * M + j] * m.el[j * L + (i % L)];
+        return res;
+    }
+
+    static Matrix<N, M, T> identity()
+    {
+        static_assert(N == M, "identity matrix construction require a square matrix type");
+        Matrix<N, M, T> id;
+        for (size_t i = 0; i < SIZE; i += N + 1)
+            id.el[i] = 1;
+        return id;
+    }
+
+    template<class>
+    friend inline std::ostream& operator << (std::ostream &s, Matrix<N, M, T> m);
+};
+
+inline void transform(Vec3 &vec, Matrix<4, 4, float> transformer)
+{
+    Matrix<4, 1, float> hom { vec.x, vec.y, vec.z, 1.f };
+    hom = transformer * hom;
+    vec.x = hom[0][0] / hom[3][0];
+    vec.y = hom[1][0] / hom[3][0];
+    vec.z = hom[2][0] / hom[3][0];
+}
+
+namespace transformer
+{
+    inline Matrix<4, 4, float> perspective(float c_dist)
+    {
+        auto id = Matrix<4, 4, float>::identity();
+        id[3][2] = -1.f / c_dist;
+        return id;
     }
 }
 
@@ -190,6 +271,42 @@ namespace calc
     {
         return val < 0 ? 0 : val > 1 ? 1 : val;
     }
+}
+
+template<class T>
+std::ostream& operator << (std::ostream &s, Vector2<T> v)
+{
+    return s << "(" << v.x << ", " << v.y << ")";
+}
+
+template<class T>
+std::istream& operator >> (std::istream &s, Vector2<T> &v)
+{
+    return s >> v.x >> v.y;
+}
+
+template<class T>
+std::ostream& operator << (std::ostream &s, Vector3<T> v)
+{
+    return s << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+}
+
+template<class T>
+std::istream& operator >> (std::istream &s, Vector3<T> &v)
+{
+    return s >> v.x >> v.y >> v.z;
+}
+
+template<size_t N, size_t M, class T>
+std::ostream& operator << (std::ostream &s, Matrix<N, M, T> m)
+{
+    for (size_t i = 0; i < N; i++)
+    {
+        for (size_t j = 0; j < M; j++)
+            s << m[i][j] << ' ';
+        s << '\n';
+    }
+    return s;
 }
 
 #endif //SIMPLE_RASTERIZER_GEOMETRY_H

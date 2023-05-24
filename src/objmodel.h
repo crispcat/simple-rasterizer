@@ -5,14 +5,15 @@
 #include <string>
 #include "geometry.h"
 #include "tgaimage.h"
+#include "renderer_structs.h"
 
 class ObjModel
 {
 public:
     TgaImage texture {};
-    std::vector<Vec3Float> vertices {};
-    std::vector<Vec2Float> uvs {};
-    std::vector<Vec3Float> normals {};
+    std::vector<Vec3> vertices {};
+    std::vector<Vec2> uvs {};
+    std::vector<Vec3> normals {};
     std::vector<Vec3Int> faces {};
     explicit ObjModel(const std::string &path);
 private:

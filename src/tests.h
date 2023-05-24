@@ -6,12 +6,12 @@
 
 void draw_primitives_triangles(RenderContext &c)
 {
-    c.fallback_color = COLOR_WHITE;
+    c.color = COLOR_WHITE;
     c.triangle_lined(10,70, 50,160, 70,80);
     c.triangle_lined(180,50, 150,1, 70,180);
     c.triangle_lined(180,150, 120,160, 130,180);
 #ifndef PROFILE
-    c.fallback_color = COLOR_GREEN;
+    c.color = COLOR_GREEN;
     c.line(10,70,  50,160);
     c.line(50,160, 70,80);
     c.line(10,70,  70,80);
@@ -26,13 +26,13 @@ void draw_primitives_triangles(RenderContext &c)
 
 void draw_primitives_lines(RenderContext &c)
 {
-    c.fallback_color = COLOR_GREEN;
+    c.color = COLOR_GREEN;
     c.line(50, 50, 75, 75);
     c.line(50, 50, 75, 25);
     c.line(50, 50, 25, 25);
     c.line(50, 50, 25, 75);
 
-    c.fallback_color = COLOR_RED;
+    c.color = COLOR_RED;
     c.line(50, 50, 75, 85);
     c.line(50, 50, 75, 65);
     c.line(50, 50, 75, 35);
@@ -42,14 +42,14 @@ void draw_primitives_lines(RenderContext &c)
     c.line(50, 50, 25, 65);
     c.line(50, 50, 25, 85);
 
-    c.fallback_color = COLOR_WHITE;
+    c.color = COLOR_WHITE;
     c.line(50, 50, 75, 50);
     c.line(50, 50, 50, 25);
     c.line(50, 50, 25, 50);
     c.line(50, 50, 50, 75);
 }
 
-void defileVectors()
+void calc_vectors()
 {
 #ifdef PROFILE
     std::cout.setstate(std::ios_base::failbit);
@@ -66,9 +66,9 @@ void defileVectors()
     std::cout << "normalized" << vec2intA << " = " << vec2intA.normalized() << '\n';
     std::cout << "scale -5" << vec2intA << " = " << vec2intA.scale(-5) << '\n';
 
-    Vec2Float vec2floatA(1.744, -2.33);
-    Vec2Float vec2floatB(-4.0, 3.5);
-    std::cout << "Vec2Float:\n";
+    Vec2 vec2floatA(1.744, -2.33);
+    Vec2 vec2floatB(-4.0, 3.5);
+    std::cout << "Vec2:\n";
     std::cout << vec2floatA << " + " << vec2floatB << " = " << vec2floatA + vec2floatB << '\n';
     std::cout << vec2floatA << " - " << vec2floatB << " = " << vec2floatA - vec2floatB << '\n';
     std::cout << vec2floatA << " dot " << vec2floatB << " = " << geometry::dot(vec2floatA, vec2floatB) << '\n';
@@ -89,9 +89,9 @@ void defileVectors()
     std::cout << "normalized" << vec3intA << " = " << vec3intA.normalized() << '\n';
     std::cout << "scale -5" << vec3intA << " = " << vec3intA.scale(-5) << '\n';
 
-    Vec3Float vec3floatA(1.744, -2.33, 8.3333333);
-    Vec3Float vec3floatB(-4.0, 3.5, -1.91);
-    std::cout << "Vec3Float:\n";
+    Vec3 vec3floatA(1.744, -2.33, 8.3333333);
+    Vec3 vec3floatB(-4.0, 3.5, -1.91);
+    std::cout << "Vec3:\n";
     std::cout << vec3floatA << " + " << vec3floatB << " = " << vec3floatA + vec3floatB << '\n';
     std::cout << vec3floatA << " - " << vec3floatB << " = " << vec3floatA - vec3floatB << '\n';
     std::cout << vec3floatA << " dot " << vec3floatB << " = " << geometry::dot(vec3floatA, vec3floatB) << '\n';
@@ -100,9 +100,35 @@ void defileVectors()
     std::cout << "sqnorm" << vec3floatA << " = " << vec3floatA.sqnorm() << '\n';
     std::cout << "normalized" << vec3floatA << " = " << vec3floatA.normalized() << '\n';
     std::cout << "scale -5" << vec3floatA << " = " << vec3floatA.scale(-5) << '\n';
+    std::cout << '\n';
+
 #ifdef PROFILE
     }
 #endif
+}
+
+void calc_matrices()
+{
+    Matrix<2, 5, float> m1 { 3,    7,  -2,   12,  4,
+                             3.4f, 1.f, 0.f, 5.f, 33 };
+
+    Matrix<5, 2, float> m2 { 3, 3,
+                             0, 0,
+                             5, 5,
+                             4, 4,
+                             2, 1 };
+
+    std::cout << "m1:" << '\n' << m1 << '\n' << '\n';
+    std::cout << "m2:" << '\n' << m2 << '\n' << '\n';
+
+    auto m3 = m1 * m2;
+    std::cout << "m3:" << '\n' << m3 << '\n' << '\n';
+
+    float m4d[10] = { 3,    7,  -2,   12,  4,
+                      3.4f, 1.f, 0.f, 5.f, 33 };
+
+    Matrix<5, 2, float>m4(m4d);
+    std::cout << "m4:" << '\n' << m4 << '\n';
 }
 
 #endif //SIMPLE_RASTERIZER_TESTS_H

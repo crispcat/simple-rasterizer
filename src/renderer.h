@@ -15,16 +15,17 @@ class RenderContext
  * STATE
  * */
 public:
-    std::vector<Vec3Float> vertices {};
-    std::vector<Vec2Float> uvs {};
-    std::vector<Vec3Float> normals {};
-    std::vector<Vec3Int> faces {};
-    Color32 fallback_color{};
-    Vec3Float light_dir { 0.f, 0.f, -1.f };
-    bool use_texture{};
+    std::vector<Vec3> vertices{};
+    std::vector<Vec2> uvs{};
+    std::vector<Vec3> normals{};
+    std::vector<Vec3Int> faces{};
+    Color32 color = COLOR_WHITE;
+    Vec3 light_dir { 0.f, 0.f, -1.f };
+    float camera_distance = 1.5f;
+    float clipping_plane = 3.f;
 
 public:
-    explicit RenderContext(uint16_t w, uint16_t h, float distance);
+    explicit RenderContext(uint16_t w, uint16_t h);
     virtual ~RenderContext();
     void set_texture(const TgaImage &t);
 /*
@@ -39,11 +40,11 @@ public:
  * */
 public:
     void frame();
-    void points();
-    void triangles();
-    void triangles_wired();
+    void drawcall();
+    void gizmo_points();
+    void gizmo_triangles();
 protected:
-    void triangle(Vertex face[3]);
+    void triangle(Vert vs[3]);
 /*
  * LIGHT
  * */
@@ -58,21 +59,14 @@ protected:
 protected:
     uint16_t w;
     uint16_t h;
-    float z_max;
     float *z_buff;
+    void vert(Vert &v) const;
     void frag(Frag &f);
     virtual void pixel(uint16_t x, uint16_t y, Color32 c) = 0;
-    Vec3Float viewport_scale_vector;
-    ScreenPoint transform2screen(Vec3Float v) const;
+    Vec3 viewport_scale_vector;
+    ScreenPoint transform2screen(Vec3 v) const;
     TgaImage texture;
-    Vec2Float texture_scale_vector;
-/*
- * DATA
- * */
-protected:
-    Vec3Float pos(Vertex v) const { return vertices[v.iv]; }
-    Vec3Float normal(Vertex v) const { return normals[v.in]; }
-    Vec2Float uv(Vertex v) const { return uvs[v.iuv]; }
+    Vec2 texture_scale_vector;
 };
 
 /*
@@ -81,7 +75,7 @@ protected:
 class RtContext : public RenderContext
 {
 public:
-    explicit RtContext(uint32_t *f_buff, uint16_t w, uint16_t h, float dist) : RenderContext(w, h, dist), f_buff(f_buff) { }
+    explicit RtContext(uint32_t *f_buff, uint16_t w, uint16_t h) : RenderContext(w, h), f_buff(f_buff) { }
     void pixel(uint16_t x, uint16_t y, Color32 c) override { f_buff[(h - y) * w + x] = c; }
 private:
     uint32_t *f_buff;
@@ -94,7 +88,7 @@ class TgaImageContext : public RenderContext
 {
 public:
     TgaImage &image;
-    explicit TgaImageContext(TgaImage &image, float dist) : RenderContext(image.get_width(), image.get_height(), dist), image(image) { }
+    explicit TgaImageContext(TgaImage &image) : RenderContext(image.get_width(), image.get_height()), image(image) { }
     void pixel(uint16_t x, uint16_t y, Color32 c) override { image.set(x, h - y, c.bits); }
 };
 

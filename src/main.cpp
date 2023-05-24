@@ -5,10 +5,7 @@
 #include "tests.h"
 
 const int FPS = 30;
-const float VIEW_DIST = 1;
-
 void draw_model(RenderContext &c, const ObjModel &m);
-
 int main(int argc, char **argv)
 {
     if (argc < 3)
@@ -27,32 +24,35 @@ int main(int argc, char **argv)
     if (mode == "rt")
     {
         Fenster f(w, h, "simple-rasterizer");
-        RtContext c(f.getbuff(), w, h, VIEW_DIST);
+        RtContext c(f.getbuff(), w, h);
         while (f.loop(FPS))
             draw_model(c, m);
     }
     else if (mode == "tga")
     {
         TgaImage i(w, h, TgaImage::Format::RGB);
-        TgaImageContext c(i, VIEW_DIST);
+        TgaImageContext c(i);
         draw_model(c, m);
         c.image.write_tga_file("output.tga");
         std::cout << "Model rendered to output.tga" << std::endl;
     }
     else if (mode == "tests")
     {
+        //calc_vectors();
+        calc_matrices();
+
         TgaImage i1(100, 100, TgaImage::Format::RGB);
         TgaImage i2(200, 200, TgaImage::Format::RGB);
 
-        TgaImageContext c1(i1, VIEW_DIST);
+        TgaImageContext c1(i1);
         draw_primitives_lines(c1);
         c1.image.write_tga_file("lines.tga");
         std::cout << "Lines test rendered to lines.tga" << std::endl;
 
-        TgaImageContext c2(i2, VIEW_DIST);
+        TgaImageContext c2(i2);
         draw_primitives_triangles(c2);
-        c2.image.write_tga_file("triangles.tga");
-        std::cout << "Triangles test rendered to triangles.tga" << std::endl;
+        c2.image.write_tga_file("drawcall.tga");
+        std::cout << "Triangles test rendered to drawcall.tga" << std::endl;
     }
 
     return 0;
@@ -60,15 +60,14 @@ int main(int argc, char **argv)
 
 void draw_model(RenderContext &c, const ObjModel &m)
 {
-    c.fallback_color = COLOR_RED;
     c.set_texture(m.texture);
     c.vertices = m.vertices;
     c.normals = m.normals;
     c.faces = m.faces;
     c.uvs = m.uvs;
-    c.triangles();
-//    fallback_color.fallback_color = COLOR_GREEN;
-//    fallback_color.triangles_wired();
-//    fallback_color.fallback_color = COLOR_RED;
-//    fallback_color.points();
+    c.drawcall();
+//    color.color = COLOR_GREEN;
+//    color.gizmo_triangles();
+//    color.color = COLOR_RED;
+//    color.gizmo_points();
 }

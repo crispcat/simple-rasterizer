@@ -18,8 +18,8 @@ ObjModel::ObjModel(const std::string &path)
     std::string line;
     std::string token;
     int lineCount = 0;
-    Vec3Float vec3f;
-    Vec2Float vec2f;
+    Vec3 vec3f;
+    Vec2 vec2f;
     while (!in.eof())
     {
         lineCount++;
