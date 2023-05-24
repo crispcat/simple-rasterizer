@@ -21,8 +21,8 @@ public:
     std::vector<Vec3Int> faces{};
     Color32 color = COLOR_WHITE;
     Vec3 light_dir { 0.f, 0.f, -1.f };
-    float camera_distance = 1.5f;
-    float clipping_plane = 3.f;
+    float camera_distance = 2.f;  // from origin
+    float clipping_plane = 3.f;   // far
 
 public:
     explicit RenderContext(uint16_t w, uint16_t h);
@@ -39,7 +39,6 @@ public:
  * 3D
  * */
 public:
-    void frame();
     void drawcall();
     void gizmo_points();
     void gizmo_triangles();
@@ -60,6 +59,7 @@ protected:
     uint16_t w;
     uint16_t h;
     float *z_buff;
+    void frame();
     void vert(Vert &v) const;
     void frag(Frag &f);
     virtual void pixel(uint16_t x, uint16_t y, Color32 c) = 0;

@@ -18,7 +18,7 @@ struct Vector2
         T raw[2];
     };
 
-    Vector2() = default;
+    Vector2() : x(), y() { }
     Vector2(T x, T y) : x(x), y(y) { }
     explicit Vector2(T raw[2]) : raw(raw) { }
 
@@ -64,7 +64,7 @@ struct Vector3
         T raw[3];
     };
 
-    Vector3() = default;
+    Vector3() : x(), y(), z() { }
     Vector3(T x, T y, T z) : x(x), y(y), z(z) { }
     explicit Vector3(T raw[3]) : raw(raw) { }
 

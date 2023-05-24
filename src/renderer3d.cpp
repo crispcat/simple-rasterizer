@@ -35,9 +35,7 @@ void RenderContext::triangle(Vert vs[3])
         if (bcentr.x < 0 || bcentr.y < 0 || bcentr.z < 0)
             continue;
 
-        Frag f(pix, vs);
-        f.color = color;
-        f.bcentr = bcentr;
+        Frag f(pix, color, bcentr, vs);
         frag(f);
     }
 }

@@ -28,14 +28,11 @@ const Color32 COLOR_BLUE     (0x0000fa);
 const Color32 COLOR_WHITE =  COLOR_RED +
                              COLOR_GREEN +
                              COLOR_BLUE;
-
 struct Vert
 {
     Vec3 pos;
     Vec3 norm;
     Vec2 tex;
-    //
-    Vert() : pos(), norm(), tex() { }
     Vert(Vec3 pos, Vec3 norm, Vec2 uv) : pos(pos), norm(norm), tex(uv) { }
 };
 
@@ -43,28 +40,28 @@ struct Vert
 struct Frag
 {
     ScreenPoint pix;
+    Color32 color;
     Vec3 bcentr;
     Vert *v;
-    Color32 color;
-    //
-    explicit Frag(ScreenPoint &pix, Vert vs[3]) : pix(pix), bcentr(), v(vs), color() { }
-    explicit Frag(ScreenPoint &&pix, Vert vs[3]) : pix(std::move(pix)), bcentr(), v(vs), color() { }
+    explicit Frag(ScreenPoint &pix, Color32 color, Vec3 bcenrt, Vert vs[3]) :
+        pix(pix),
+        color(color),
+        bcentr(bcenrt),
+        v(vs) {
+    }
 };
 
 struct ScreenLine
 {
-    uint16_t *x;
-    uint16_t *y;
-    bool flipped;
-    uint16_t _x;
-    uint16_t _y;
-    uint16_t _x1;
+    uint16_t x;
+    uint16_t y;
+    uint16_t x1;
+    uint16_t y1;
     int dev;
-    int ddev;
-    int _2dy;
-    int diry;
+    int dy;
+    int dx;
     int dirx;
-    //
+    int diry;
     ScreenLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
     bool move();
 };

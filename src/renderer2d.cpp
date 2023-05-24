@@ -3,9 +3,9 @@
 void RenderContext::line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
     ScreenLine l(x0, y0, x1, y1);
-    pixel(*l.x, *l.y, color);
+    pixel(l.x, l.y, color);
     while (l.move())
-        pixel(*l.x, *l.y, color);
+        pixel(l.x, l.y, color);
 }
 
 void RenderContext::triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
@@ -25,23 +25,23 @@ void RenderContext::triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16
     ScreenLine bc(x1,y1, x2,y2);
     ScreenLine ac(x0,y0, x2,y2);
 
-    pixel(*ac.x, *ac.y, color);
+    pixel(ac.x, ac.y, color);
 
-    uint16_t x_prev = *ac.x;
+    uint16_t x_prev = ac.x;
     while (ab.move())
     {
-        if (x_prev == *ab.x) continue;
-        while (x_prev == *ac.x) ac.move();
-        brush(*ab.x, *ab.y, *ac.y);
-        x_prev = *ab.x;
+        if (x_prev == ab.x) continue;
+        while (x_prev == ac.x) ac.move();
+        brush(ab.x, ab.y, ac.y);
+        x_prev = ab.x;
     }
 
     while (bc.move())
     {
-        if (x_prev == *bc.x) continue;
-        while (x_prev == *ac.x) ac.move();
-        brush(*bc.x, *bc.y, *ac.y);
-        x_prev = *bc.x;
+        if (x_prev == bc.x) continue;
+        while (x_prev == ac.x) ac.move();
+        brush(bc.x, bc.y, ac.y);
+        x_prev = bc.x;
     }
 }
 
@@ -52,50 +52,31 @@ void RenderContext::triangle_wired(uint16_t x0, uint16_t y0, uint16_t x1, uint16
     line(x2,y2, x0,y0);
 }
 
-ScreenLine::ScreenLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+ScreenLine::ScreenLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) : x(x0), y(y0), x1(x1), y1(y1)
 {
-    uint16_t dy = std::abs(y1 - y0);
-    uint16_t dx = std::abs(x1 - x0);
-
-    if (dy > dx)
-    {
-        std::swap(dy, dx);
-        std::swap(x0, y0);
-        std::swap(x1, y1);
-        flipped = true;
-        x = &_y;
-        y = &_x;
-    }
-    else
-    {
-        flipped = false;
-        x = &_x;
-        y = &_y;
-    }
-
-    _2dy = (dy << 1);
-    int _2dx = (dx << 1);
-    dev = _2dy - dx;
-    ddev = _2dy - _2dx;
+    dy = std::abs(y1 - y0);
+    dx = std::abs(x1 - x0);
+    dev = (dx > dy ? dx : -dy) / 2;
     diry = y0 > y1 ? -1 : 1;
     dirx = x0 > x1 ? -1 : 1;
-    _x1 = x1;
-    _x = x0;
-    _y = y0;
 }
 
 bool ScreenLine::move()
 {
-    if (_x == _x1)
+    if (x == x1 && y == y1)
         return false;
 
-    _x += dirx;
-    if (dev > 0)
+    int ddev = dev;
+    if (ddev > -dx)
     {
-        _y += diry;
-        dev += ddev;
+        dev -= dy;
+        x += dirx;
     }
-    else { dev += _2dy; }
+    if (ddev < dy)
+    {
+        dev += dx;
+        y += diry;
+    }
 
     return true;
 }

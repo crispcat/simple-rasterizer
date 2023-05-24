@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     }
     else if (mode == "tests")
     {
-        //calc_vectors();
+        calc_vectors();
         calc_matrices();
 
         TgaImage i1(100, 100, TgaImage::Format::RGB);

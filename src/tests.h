@@ -51,11 +51,11 @@ void draw_primitives_lines(RenderContext &c)
 
 void calc_vectors()
 {
-#ifdef PROFILE
-    std::cout.setstate(std::ios_base::failbit);
-    for (uint32_t i = 0; i < 100000; i++) {
-#endif
-    Vec2Int vec2intA(1, -2);
+//#ifdef PROFILE
+//    std::cout.setstate(std::ios_base::failbit);
+//    for (uint32_t i = 0; i < 100000; i++) {
+//#endif
+    Vec2Int vec2intA;
     Vec2Int vec2intB(-4, 3);
     std::cout << "Vec2Int:\n";
     std::cout << vec2intA << " + " << vec2intB << " = " << vec2intA + vec2intB << '\n';
@@ -101,10 +101,9 @@ void calc_vectors()
     std::cout << "normalized" << vec3floatA << " = " << vec3floatA.normalized() << '\n';
     std::cout << "scale -5" << vec3floatA << " = " << vec3floatA.scale(-5) << '\n';
     std::cout << '\n';
-
-#ifdef PROFILE
-    }
-#endif
+//#ifdef PROFILE
+//    }
+//#endif
 }
 
 void calc_matrices()

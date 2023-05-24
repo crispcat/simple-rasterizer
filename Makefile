@@ -1,12 +1,14 @@
 # make params
 COMPILER = clang++
-CXXFLAGS = -std=c++20
+CXXFLAGS =
 LDFLAGS  =
 LIBS     = -lm -lX11
 DST_DIR  = bin/
 SRC_DIR  = src/
 OBJ_DIR  = obj/
 RES_DIR  = res/
+
+CXXFLAGS += -std=c++20
 
 TARGET_RELEASE  = simple-rasterizer
 TARGET_DEBUG    = simple-rasterizer-debug
