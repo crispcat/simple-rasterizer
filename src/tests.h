@@ -6,6 +6,7 @@
 
 void draw_primitives_triangles(RenderContext &c)
 {
+    c.frame();
     c.color = COLOR_WHITE;
     c.triangle_lined(10,70, 50,160, 70,80);
     c.triangle_lined(180,50, 150,1, 70,180);
@@ -22,10 +23,12 @@ void draw_primitives_triangles(RenderContext &c)
     c.line(180,150, 130,180);
     c.line(120,160, 130,180);
 #endif
+    c.flush();
 }
 
 void draw_primitives_lines(RenderContext &c)
 {
+    c.frame();
     c.color = COLOR_GREEN;
     c.line(50, 50, 75, 75);
     c.line(50, 50, 75, 25);
@@ -47,6 +50,7 @@ void draw_primitives_lines(RenderContext &c)
     c.line(50, 50, 50, 25);
     c.line(50, 50, 25, 50);
     c.line(50, 50, 50, 75);
+    c.flush();
 }
 
 void calc_vectors()
@@ -127,7 +131,15 @@ void calc_matrices()
                       3.4f, 1.f, 0.f, 5.f, 33 };
 
     Matrix<5, 2, float>m4(m4d);
-    std::cout << "m4:" << '\n' << m4 << '\n';
+    std::cout << "m4:" << '\n' << m4 << '\n' << '\n';
+
+    Matrix<5, 2, float>m5 { 3,    7,  -2,   12,  4,
+                            3.4f, 1.f, 0.f, 5.f, 33,
+                            0,    0,   0,   0,   0};
+    std::cout << "m5:" << '\n' << m5 << '\n';
+
+    Matrix<5, 2, float>m6 { 3, 7, -2, 12, 4 };
+    std::cout << "m6:" << '\n' << m6 << '\n';
 }
 
 #endif //SIMPLE_RASTERIZER_TESTS_H

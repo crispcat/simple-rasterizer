@@ -1,18 +1,19 @@
+#include <array>
 #include "renderer.h"
 
 void RenderContext::drawcall()
 {
-    frame();
     for (size_t i = 0; i < faces.size(); i += 3)
     {
-        Vert v[3] = { Vert(vertices[faces[i].iv],   normals[faces[i].in],   uvs[faces[i].iuv]),
-                      Vert(vertices[faces[i+1].iv], normals[faces[i+1].in], uvs[faces[i+1].iuv]),
-                      Vert(vertices[faces[i+2].iv], normals[faces[i+2].in], uvs[faces[i+2].iuv]), };
-        triangle(v);
+        std::array<Vert, 3> vs { Vert(vertices[faces[i].iv],   normals[faces[i].in],   uvs[faces[i].iuv]),
+                                 Vert(vertices[faces[i+1].iv], normals[faces[i+1].in], uvs[faces[i+1].iuv]),
+                                 Vert(vertices[faces[i+2].iv], normals[faces[i+2].in], uvs[faces[i+2].iuv]), };
+        t_pool.push_task(&RenderContext::triangle, this, vs);
     }
+    t_pool.wait_for_tasks();
 }
 
-void RenderContext::triangle(Vert vs[3])
+void RenderContext::triangle(std::array<Vert, 3>  vs)
 {
     vert(vs[0]);
     vert(vs[1]);

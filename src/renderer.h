@@ -2,13 +2,12 @@
 #define SIMPLE_RASTERIZER_RENDERER_H
 
 #include <vector>
+#include <memory>
 #include "geometry.h"
 #include "tgaimage.h"
 #include "renderer_structs.h"
+#include "thread_pool.h"
 
-/*
- * GENERAL ABSTRACT CONTEXT
- * */
 class RenderContext
 {
 /*
@@ -25,9 +24,13 @@ public:
     float clipping_plane = 3.f;   // far
 
 public:
-    explicit RenderContext(uint16_t w, uint16_t h);
+    explicit RenderContext(uint32_t *screen_buff, uint16_t width, uint16_t height);
     virtual ~RenderContext();
-    void set_texture(const TgaImage &t);
+    void set_tex(const TgaImage &t);
+    void set_s_buff(uint32_t *screen_buff, uint16_t width, uint16_t height);
+    void frame();
+    void flush();
+    void render() { frame(); drawcall(); flush(); }
 /*
  * 2D
  * */
@@ -42,8 +45,7 @@ public:
     void drawcall();
     void gizmo_points();
     void gizmo_triangles();
-protected:
-    void triangle(Vert vs[3]);
+    void triangle(std::array<Vert, 3>  vs);
 /*
  * LIGHT
  * */
@@ -58,38 +60,18 @@ protected:
 protected:
     uint16_t w;
     uint16_t h;
+    TgaImage tex;
+    Vec2 tex_scale;
+    Vec3 screen_scale;
     float *z_buff;
-    void frame();
+    uint32_t *f_buff;
+    uint32_t *s_buff;
+    BS::thread_pool_light t_pool;
+protected:
     void vert(Vert &v) const;
     void frag(Frag &f);
-    virtual void pixel(uint16_t x, uint16_t y, Color32 c) = 0;
-    Vec3 viewport_scale_vector;
+    virtual void pixel(uint16_t x, uint16_t y, Color32 c);
     ScreenPoint transform2screen(Vec3 v) const;
-    TgaImage texture;
-    Vec2 texture_scale_vector;
-};
-
-/*
- * REALTIME CONTEXT
- * */
-class RtContext : public RenderContext
-{
-public:
-    explicit RtContext(uint32_t *f_buff, uint16_t w, uint16_t h) : RenderContext(w, h), f_buff(f_buff) { }
-    void pixel(uint16_t x, uint16_t y, Color32 c) override { f_buff[(h - y) * w + x] = c; }
-private:
-    uint32_t *f_buff;
-};
-
-/*
- * TGA IMAGE CONTEXT
- * */
-class TgaImageContext : public RenderContext
-{
-public:
-    TgaImage &image;
-    explicit TgaImageContext(TgaImage &image) : RenderContext(image.get_width(), image.get_height()), image(image) { }
-    void pixel(uint16_t x, uint16_t y, Color32 c) override { image.set(x, h - y, c.bits); }
 };
 
 #endif //SIMPLE_RASTERIZER_RENDERER_H

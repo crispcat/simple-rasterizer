@@ -4,11 +4,11 @@
 #include <cmath>
 #include <iostream>
 
-template<class T> struct Vector2;
-template<class T> struct Vector3;
+template<typename T> struct Vector2;
+template<typename T> struct Vector3;
 template<size_t N, size_t M, class T> struct Matrix;
 
-template<class T>
+template<typename T>
 struct Vector2
 {
     union
@@ -42,18 +42,18 @@ struct Vector2
     operator Vector3<T>() { return Vector3<T>(x, y); }
     Vector2<T> apply(T (*a)(T)) { return Vector2<T>(a(x), a(y)); }
 
-    template<class V>
+    template<typename V>
     operator Vector2<V>() { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
-    template<class V>
+    template<typename V>
     operator Vector3<V>() { return Vector3<V>(static_cast<V>(x), static_cast<V>(y), T{}); }
 
-    template<class>
+    template<typename>
     friend std::ostream& operator << (std::ostream &s, Vector2<T> v);
-    template<class>
+    template<typename>
     friend std::istream& operator >> (std::istream &s, Vector2<T> &v);
 };
 
-template<class T>
+template<typename T>
 struct Vector3
 {
     union
@@ -88,14 +88,14 @@ struct Vector3
     operator Vector2<T>() const { return Vector2<T>(x, y); }
     Vector3<T> apply(T (*a)(T)) const { return Vector3<T>(a(x), a(y), a(z)); }
 
-    template<class V>
+    template<typename V>
     operator Vector3<V>() const { return Vector3<V>(static_cast<V>(x), static_cast<V>(y), static_cast<V>(z)); }
-    template<class V>
+    template<typename V>
     operator Vector2<V>() const { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
 
-    template<class>
+    template<typename>
     friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
-    template<class>
+    template<typename>
     friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
 };
 
@@ -112,13 +112,13 @@ const Vec3Int Vec3IntOne(1, 1, 1);
 
 namespace geometry
 {
-    template<class T>
+    template<typename T>
     T dot(Vector2<T> a, Vector2<T> b)
     {
         return a.x * b.x + a.y * b.y;
     }
 
-    template<class T>
+    template<typename T>
     T dot(Vector3<T> a, Vector3<T> b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z;
@@ -131,7 +131,7 @@ namespace geometry
     //  a.y * b.z - a.z * b.y = x
     //  a.z * b.x - a.x * b.z = y
     //  a.x * b.y - a.y * b.x = z
-    template<class T>
+    template<typename T>
     Vector3<T> cross(Vector3<T> a, Vector3<T> b)
     {
         return { a.y * b.z - a.z * b.y,
@@ -142,8 +142,8 @@ namespace geometry
     //  barycentric coordinates is linear combination of the face vectors with weights
     //  representing a point inside a polygon.
     //
-    //  P = (1 - u - v) * A + u*B + v*C
-    //  P = A + u*AB + v*AC
+    //  P = (1 - u - v) * Args_ + u*B + v*C
+    //  P = Args_ + u*AB + v*AC
     //  u*AB + v*AC + PA = 0
     //
     //  { u * AB(x) + v * AC(x) + PA(x) = 0;
@@ -166,7 +166,7 @@ namespace geometry
     }
 }
 
-template </*ROWS*/size_t N,/*COLS*/size_t M, class T>
+template </*ROWS*/size_t N,/*COLS*/size_t M, typename T>
 struct Matrix
 {
     static const size_t SIZE = N * M;
@@ -175,7 +175,7 @@ struct Matrix
 
     Matrix() : el { 0 } { }
 
-    explicit Matrix(T arr[SIZE]) : el { 0 }
+    explicit Matrix(T arr[SIZE])
     {
         std::copy(arr, arr + SIZE, el);
     }
@@ -237,7 +237,7 @@ struct Matrix
         return id;
     }
 
-    template<class>
+    template<typename>
     friend inline std::ostream& operator << (std::ostream &s, Matrix<N, M, T> m);
 };
 
@@ -273,31 +273,31 @@ namespace calc
     }
 }
 
-template<class T>
+template<typename T>
 std::ostream& operator << (std::ostream &s, Vector2<T> v)
 {
     return s << "(" << v.x << ", " << v.y << ")";
 }
 
-template<class T>
+template<typename T>
 std::istream& operator >> (std::istream &s, Vector2<T> &v)
 {
     return s >> v.x >> v.y;
 }
 
-template<class T>
+template<typename T>
 std::ostream& operator << (std::ostream &s, Vector3<T> v)
 {
     return s << "(" << v.x << ", " << v.y << ", " << v.z << ")";
 }
 
-template<class T>
+template<typename T>
 std::istream& operator >> (std::istream &s, Vector3<T> &v)
 {
     return s >> v.x >> v.y >> v.z;
 }
 
-template<size_t N, size_t M, class T>
+template<size_t N, size_t M, typename T>
 std::ostream& operator << (std::ostream &s, Matrix<N, M, T> m)
 {
     for (size_t i = 0; i < N; i++)

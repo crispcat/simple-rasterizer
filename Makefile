@@ -1,14 +1,12 @@
 # make params
 COMPILER = clang++
-CXXFLAGS =
+CXXFLAGS = -std=c++17
 LDFLAGS  =
 LIBS     = -lm -lX11
 DST_DIR  = bin/
 SRC_DIR  = src/
 OBJ_DIR  = obj/
 RES_DIR  = res/
-
-CXXFLAGS += -std=c++20
 
 TARGET_RELEASE  = simple-rasterizer
 TARGET_DEBUG    = simple-rasterizer-debug
@@ -40,7 +38,7 @@ release: CXXFLAGS += -O3 -D RELEASE
 release: $(DST_DIR)$(TARGET_RELEASE) $(RESOURCES)
 
 debug: LDFLAGS += -g -ggdb -pg
-debug: CXXFLAGS += -g -ggdb -pg -O0 -D DEBUG -D PROFILE
+debug: CXXFLAGS += -O3 -g -ggdb -pg -O0 -D DEBUG -D PROFILE
 debug: $(DST_DIR)$(TARGET_DEBUG) $(RESOURCES)
 
 $(DST_DIR)$(TARGET_RELEASE): $(OBJ_RELEASE)

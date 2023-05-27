@@ -1,6 +1,8 @@
 #ifndef SIMPLE_RASTERIZER_RENDERER_STRUCTS_H
 #define SIMPLE_RASTERIZER_RENDERER_STRUCTS_H
 
+#include <array>
+
 struct Color32
 {
     union
@@ -42,8 +44,8 @@ struct Frag
     ScreenPoint pix;
     Color32 color;
     Vec3 bcentr;
-    Vert *v;
-    explicit Frag(ScreenPoint &pix, Color32 color, Vec3 bcenrt, Vert vs[3]) :
+    std::array<Vert, 3> v;
+    explicit Frag(ScreenPoint &pix, Color32 color, Vec3 bcenrt, std::array<Vert, 3> vs) :
         pix(pix),
         color(color),
         bcentr(bcenrt),

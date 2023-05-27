@@ -53,14 +53,14 @@ FENSTER_API int64_t fenster_time();
 #ifndef FENSTER_HEADER
 #if defined(__APPLE__)
 #define msg(r, o, s) ((r(*)(id, SEL))objc_msgSend)(o, sel_getUid(s))
-#define msg1(r, o, s, A, a)                                                    \
-  ((r(*)(id, SEL, A))objc_msgSend)(o, sel_getUid(s), a)
-#define msg2(r, o, s, A, a, B, b)                                              \
-  ((r(*)(id, SEL, A, B))objc_msgSend)(o, sel_getUid(s), a, b)
-#define msg3(r, o, s, A, a, B, b, C, color)                                        \
-  ((r(*)(id, SEL, A, B, C))objc_msgSend)(o, sel_getUid(s), a, b, color)
-#define msg4(r, o, s, A, a, B, b, C, color, D, d)                                  \
-  ((r(*)(id, SEL, A, B, C, D))objc_msgSend)(o, sel_getUid(s), a, b, color, d)
+#define msg1(r, o, s, Args_, a)                                                    \
+  ((r(*)(id, SEL, Args_))objc_msgSend)(o, sel_getUid(s), a)
+#define msg2(r, o, s, Args_, a, B, b)                                              \
+  ((r(*)(id, SEL, Args_, B))objc_msgSend)(o, sel_getUid(s), a, b)
+#define msg3(r, o, s, Args_, a, B, b, C, color)                                        \
+  ((r(*)(id, SEL, Args_, B, C))objc_msgSend)(o, sel_getUid(s), a, b, color)
+#define msg4(r, o, s, Args_, a, B, b, C, color, D, d)                                  \
+  ((r(*)(id, SEL, Args_, B, C, D))objc_msgSend)(o, sel_getUid(s), a, b, color, d)
 
 #define cls(x) ((id)objc_getClass(x))
 
@@ -334,6 +334,7 @@ FENSTER_API int64_t fenster_time() {
 
 #ifdef __cplusplus
 class Fenster {
+public:
     struct fenster f;
     int64_t now;
 

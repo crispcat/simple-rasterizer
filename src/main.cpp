@@ -3,9 +3,9 @@
 #include "renderer.h"
 #include "objmodel.h"
 #include "tests.h"
+#include "thread_pool.h"
 
-const int FPS = 30;
-void draw_model(RenderContext &c, const ObjModel &m);
+void set_model(RenderContext &c, const ObjModel &m);
 int main(int argc, char **argv)
 {
     if (argc < 3)
@@ -19,21 +19,23 @@ int main(int argc, char **argv)
     uint16_t w = std::stoi(argv[3]);
     uint16_t h = std::stoi(argv[4]);
 
-    ObjModel m(model_path);
+    ObjModel model(model_path);
 
     if (mode == "rt")
     {
-        Fenster f(w, h, "simple-rasterizer");
-        RtContext c(f.getbuff(), w, h);
-        while (f.loop(FPS))
-            draw_model(c, m);
+        Fenster fenster(w, h, "simple-rasterizer");
+        RenderContext context(fenster.getbuff(), w, h);
+        set_model(context, model);
+        while (fenster_loop(&fenster.f) == 0)
+            context.render();
     }
     else if (mode == "tga")
     {
-        TgaImage i(w, h, TgaImage::Format::RGB);
-        TgaImageContext c(i);
-        draw_model(c, m);
-        c.image.write_tga_file("output.tga");
+        TgaImage image(w, h, TgaImage::Format::RGBA);
+        RenderContext context((uint32_t*)image.data, w, h);
+        set_model(context, model);
+        context.render();
+        image.write_tga_file("output.tga");
         std::cout << "Model rendered to output.tga" << std::endl;
     }
     else if (mode == "tests")
@@ -41,31 +43,30 @@ int main(int argc, char **argv)
         calc_vectors();
         calc_matrices();
 
-        TgaImage i1(100, 100, TgaImage::Format::RGB);
-        TgaImage i2(200, 200, TgaImage::Format::RGB);
+        TgaImage image1(100, 100, TgaImage::Format::RGBA);
+        TgaImage image2(200, 200, TgaImage::Format::RGBA);
 
-        TgaImageContext c1(i1);
-        draw_primitives_lines(c1);
-        c1.image.write_tga_file("lines.tga");
+        RenderContext context((uint32_t*)image1.data, 100, 100);
+        draw_primitives_lines(context);
+        image1.write_tga_file("lines.tga");
         std::cout << "Lines test rendered to lines.tga" << std::endl;
 
-        TgaImageContext c2(i2);
-        draw_primitives_triangles(c2);
-        c2.image.write_tga_file("drawcall.tga");
+        context.set_s_buff((uint32_t *) image2.data, 200, 200);
+        draw_primitives_triangles(context);
+        image2.write_tga_file("drawcall.tga");
         std::cout << "Triangles test rendered to drawcall.tga" << std::endl;
     }
 
     return 0;
 }
 
-void draw_model(RenderContext &c, const ObjModel &m)
+void set_model(RenderContext &c, const ObjModel &m)
 {
-    c.set_texture(m.texture);
+    c.set_tex(m.texture);
     c.vertices = m.vertices;
     c.normals = m.normals;
     c.faces = m.faces;
     c.uvs = m.uvs;
-    c.drawcall();
 //    color.color = COLOR_GREEN;
 //    color.gizmo_triangles();
 //    color.color = COLOR_RED;
