@@ -33,8 +33,6 @@ public:
     void triangle_wired(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 public:
     void drawcall();
-    void gizmo_points();
-    void gizmo_triangles();
     void triangle(std::array<Vert, 3>  vs);
 protected:
     void apply_texture(Frag &f) const;
