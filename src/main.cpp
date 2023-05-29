@@ -4,7 +4,25 @@
 #include "objmodel.h"
 #include "tests.h"
 
+#define FPS_MON_INIT \
+    int frames = 0; \
+    int64_t ttf_accum = 0;
+
+#define FPS_MON_FRAME_START \
+    int64_t f_start = fenster_time();
+
+#define FPS_MON_FRAME_END \
+    ttf_accum += fenster_time() - f_start; \
+    frames++; \
+    if (ttf_accum >= 1000) \
+    { \
+        std::cout << "FPS: " << frames << " TTF: " << ttf_accum / frames << " ms." << '\n'; \
+        ttf_accum = 0; \
+        frames = 0; \
+    } \
+
 void set_model(RenderContext &c, const ObjModel &m);
+
 int main(int argc, char **argv)
 {
     if (argc < 3)
@@ -25,8 +43,13 @@ int main(int argc, char **argv)
         Fenster fenster(w, h, "simple-rasterizer");
         RenderContext context(fenster.getbuff(), w, h);
         set_model(context, model);
+        FPS_MON_INIT
         while (fenster_loop(&fenster.f) == 0)
+        {
+            FPS_MON_FRAME_START
             context.render();
+            FPS_MON_FRAME_END
+        }
     }
     else if (mode == "tga")
     {

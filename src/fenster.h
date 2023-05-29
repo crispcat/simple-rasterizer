@@ -337,7 +337,6 @@ class Fenster {
 public:
     struct fenster f;
     int64_t now;
-
 public:
     Fenster(const int w, const int h, const char *title)
             : f{.title = title, .width = w, .height = h} {

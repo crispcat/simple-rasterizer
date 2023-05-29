@@ -18,7 +18,7 @@ public:
     explicit ObjModel(const std::string &path);
 private:
     void parse_face_vertx(std::istringstream &s);
-    void load_texture(TgaImage &tex, const std::string &path, const std::string &name) const;
+    static void load_texture(TgaImage &tex, const std::string &path, const std::string &name);
 };
 
 #endif //SIMPLE_RASTERIZER_OBJMODEL_H

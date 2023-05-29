@@ -3,12 +3,11 @@
 
 void RenderContext::drawcall()
 {
-    #pragma omp parallel for
     for (size_t i = 0; i < faces.size(); i += 3)
     {
         std::array<Vert, 3> vs { Vert(vertices[faces[i].iv],   normals[faces[i].in],   uvs[faces[i].iuv]),
                                  Vert(vertices[faces[i+1].iv], normals[faces[i+1].in], uvs[faces[i+1].iuv]),
-                                 Vert(vertices[faces[i+2].iv], normals[faces[i+2].in], uvs[faces[i+2].iuv]),};
+                                 Vert(vertices[faces[i+2].iv], normals[faces[i+2].in], uvs[faces[i+2].iuv]) };
         triangle(vs);
     }
 }
@@ -28,6 +27,7 @@ void RenderContext::triangle(std::array<Vert, 3>  vs)
     uint32_t y0 = std::min(svs[0].y, std::min(svs[1].y, svs[2].y));
     uint32_t y1 = std::max(svs[0].y, std::max(svs[1].y, svs[2].y));
 
+    #pragma omp parallel for
     for (uint32_t x = x0; x <= x1; x++)
     for (uint32_t y = y0; y <= y1; y++)
     {

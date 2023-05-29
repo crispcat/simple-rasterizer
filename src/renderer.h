@@ -53,7 +53,7 @@ protected:
     void vert(Vert &v) const;
     void frag(Frag &f);
     virtual void pixel(uint16_t x, uint16_t y, Color32 c);
-    [[nodiscard]] Vec2Int transform2screen(Vec3 v) const;
+    Vec2Int transform2screen(Vec3 v) const;
 };
 
 #endif //SIMPLE_RASTERIZER_RENDERER_H

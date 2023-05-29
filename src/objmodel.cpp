@@ -66,12 +66,12 @@ ObjModel::ObjModel(const std::string &path)
     std::cout << "\tFaces parsed: " << faces.size() << '\n';
 }
 
-void ObjModel::load_texture(TgaImage &tex, const std::string &path, const std::string &name) const
+void ObjModel::load_texture(TgaImage &tex, const std::string &path, const std::string &name)
 {
     auto p = std::filesystem::path(path).parent_path().append(name).string();
     tex.read_tga_file(p.c_str());
     tex.flip_vertically();
-    std::cout << "\tTexture " << p << " loaded. Size " << diffuse.get_width() << 'x' << diffuse.get_height() << ".\n";
+    std::cout << "\tTexture " << p << " loaded. Size " << tex.get_width() << 'x' << tex.get_height() << ".\n";
 }
 
 void ObjModel::parse_face_vertx(std::istringstream &s)
