@@ -47,8 +47,7 @@ void RenderContext::frag(Frag &f)
     auto &v = f.v;
     float z = geometry::dot(f.bcentr, { v[0].pos.z, v[1].pos.z, v[2].pos.z });
     uint32_t i = f.pix.y * h + f.pix.x;
-    if (z <= z_buff[i])
-        return;
+    if (z <= z_buff[i]) return;
     z_buff[i] = z;
     apply_texture(f);
     gouroud_light(f);
@@ -97,9 +96,9 @@ void RenderContext::pixel(uint16_t x, uint16_t y, Color32 c)
     f_buff[(h - y) * w + x] = c;
 }
 
-ScreenPoint RenderContext::transform2screen(Vec3 v) const
+Vec2Int RenderContext::transform2screen(Vec3 v) const
 {
     Vec3 sv = (v + Vec3One).scale(screen_scale).apply(std::round);
-    return (ScreenPoint) sv;
+    return (Vec2Int) sv;
 }
 

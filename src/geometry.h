@@ -101,8 +101,8 @@ struct Vector3
 
 using Vec2 = Vector2<float>;
 using Vec3 = Vector3<float>;
-using Vec2Int = Vector2<int>;
-using Vec3Int = Vector3<int>;
+using Vec2Int = Vector2<int32_t>;
+using Vec3Int = Vector3<int32_t>;
 using ScreenPoint = Vector2<uint16_t>;
 
 const Vec2 Vec2One(1.f, 1.f);
@@ -262,12 +262,14 @@ namespace transformer
 
 namespace calc
 {
-    inline float clamp0(float val)
+    template <class T>
+    inline T clamp0(T val)
     {
         return val < 0 ? 0 : val;
     }
 
-    inline float clamp01(float val)
+    template <class T>
+    inline T clamp01(T val)
     {
         return val < 0 ? 0 : val > 1 ? 1 : val;
     }
