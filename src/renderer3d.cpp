@@ -3,14 +3,14 @@
 
 void RenderContext::drawcall()
 {
+    #pragma omp parallel for
     for (size_t i = 0; i < faces.size(); i += 3)
     {
         std::array<Vert, 3> vs { Vert(vertices[faces[i].iv],   normals[faces[i].in],   uvs[faces[i].iuv]),
                                  Vert(vertices[faces[i+1].iv], normals[faces[i+1].in], uvs[faces[i+1].iuv]),
-                                 Vert(vertices[faces[i+2].iv], normals[faces[i+2].in], uvs[faces[i+2].iuv]), };
-        t_pool.push_task(&RenderContext::triangle, this, vs);
+                                 Vert(vertices[faces[i+2].iv], normals[faces[i+2].in], uvs[faces[i+2].iuv]),};
+        triangle(vs);
     }
-    t_pool.wait_for_tasks();
 }
 
 void RenderContext::triangle(std::array<Vert, 3>  vs)
@@ -27,7 +27,7 @@ void RenderContext::triangle(std::array<Vert, 3>  vs)
     uint16_t x1 = std::max(svs[0].x, std::max(svs[1].x, svs[2].x));
     uint16_t y0 = std::min(svs[0].y, std::min(svs[1].y, svs[2].y));
     uint16_t y1 = std::max(svs[0].y, std::max(svs[1].y, svs[2].y));
-
+    
     for (uint16_t x = x0; x <= x1; x++)
     for (uint16_t y = y0; y <= y1; y++)
     {
@@ -35,8 +35,7 @@ void RenderContext::triangle(std::array<Vert, 3>  vs)
         Vec3 bcentr = geometry::barycentric_screen(pix, svs[0], svs[1], svs[2]);
         if (bcentr.x < 0 || bcentr.y < 0 || bcentr.z < 0)
             continue;
-
-        Frag f(pix, color, bcentr, vs);
+        Frag f(pix, foregr_color, bcentr, vs);
         frag(f);
     }
 }
@@ -46,7 +45,7 @@ void RenderContext::gizmo_points()
     for (Vec3Int &face : faces)
     {
         ScreenPoint p = transform2screen(vertices[face.iv]);
-        pixel(p.x, p.y, color);
+        pixel(p.x, p.y, foregr_color);
     }
 }
 

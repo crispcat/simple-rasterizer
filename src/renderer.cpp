@@ -2,21 +2,22 @@
 #include "renderer.h"
 #include "geometry.h"
 
-RenderContext::RenderContext(uint32_t *screen_buff, uint16_t width, uint16_t height) :
+RenderContext::RenderContext(uint32_t *frame_buff, uint16_t width, uint16_t height) :
+    w(),
+    h(),
     tex_scale { },
-    t_pool { } {
-    z_buff = new float[width * height];
-    f_buff = new uint32_t[width * height];
-    set_s_buff(screen_buff, width, height);
-    frame();
+    z_buff(nullptr),
+    f_buff(nullptr) {
+    set_buff(frame_buff, width, height);
 };
 
-void RenderContext::set_s_buff(uint32_t *screen_buff, uint16_t width, uint16_t height)
+void RenderContext::set_buff(uint32_t *frame_buff, uint16_t width, uint16_t height)
 {
     w = width;
     h = height;
-    s_buff = screen_buff;
-    screen_scale = {(float)width / 2, (float)height / 2, 1.f };
+    f_buff = frame_buff;
+    delete[] z_buff; z_buff = new float[w * h];
+    screen_scale = {(float)w / 2, (float)h / 2, 1.f };
 }
 
 void RenderContext::set_tex(const TgaImage &t)
@@ -28,18 +29,12 @@ void RenderContext::set_tex(const TgaImage &t)
 RenderContext::~RenderContext()
 {
     delete[] z_buff;
-    delete[] f_buff;
 }
 
 void RenderContext::frame()
 {
+    std::fill(f_buff, f_buff + w * h, backgr_color);
     std::fill(z_buff, z_buff + w * h, -clipping_plane);
-    std::fill(f_buff, f_buff + w * h, 0);
-}
-
-void RenderContext::flush()
-{
-    std::copy(f_buff, f_buff + w * h, s_buff);
 }
 
 void RenderContext::vert(Vert &v) const
@@ -52,13 +47,12 @@ void RenderContext::frag(Frag &f)
     auto &v = f.v;
     float z = geometry::dot(f.bcentr, { v[0].pos.z, v[1].pos.z, v[2].pos.z });
     uint32_t i = f.pix.y * h + f.pix.x;
-    if (z > z_buff[i])
-    {
-        apply_texture(f);
-        gouroud_light(f);
-        pixel(f.pix.x, f.pix.y, f.color);
-        z_buff[i] = z;
-    }
+    if (z <= z_buff[i])
+        return;
+    z_buff[i] = z;
+    apply_texture(f);
+    gouroud_light(f);
+    pixel(f.pix.x, f.pix.y, f.color);
 }
 
 void RenderContext::apply_texture(Frag &f) const
@@ -98,14 +92,14 @@ void RenderContext::fong_light(Frag &f) const
     f.color = f.color.vecf().scale(l);
 }
 
+void RenderContext::pixel(uint16_t x, uint16_t y, Color32 c)
+{
+    f_buff[(h - y) * w + x] = c;
+}
+
 ScreenPoint RenderContext::transform2screen(Vec3 v) const
 {
     Vec3 sv = (v + Vec3One).scale(screen_scale).apply(std::round);
     return (ScreenPoint) sv;
-}
-
-void RenderContext::pixel(uint16_t x, uint16_t y, Color32 c)
-{
-    f_buff[(h - y) * w + x] = c;
 }
 

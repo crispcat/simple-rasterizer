@@ -10,7 +10,7 @@
 class ObjModel
 {
 public:
-    TgaImage texture {};
+    TgaImage diffuse {};
     std::vector<Vec3> vertices {};
     std::vector<Vec2> uvs {};
     std::vector<Vec3> normals {};
@@ -18,6 +18,7 @@ public:
     explicit ObjModel(const std::string &path);
 private:
     void parse_face_vertx(std::istringstream &s);
+    void load_texture(TgaImage &tex, const std::string &path, const std::string &name) const;
 };
 
 #endif //SIMPLE_RASTERIZER_OBJMODEL_H

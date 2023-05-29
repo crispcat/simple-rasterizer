@@ -46,13 +46,10 @@ ObjModel::ObjModel(const std::string &path)
             {
                 parse_face_vertx(s);
             }
-            else if (token == "#texture")
+            else if (token == "#diffuse")
             {
                 s >> token;
-                auto p = std::filesystem::path(path).parent_path().append(token).string();
-                texture.read_tga_file(p.c_str());
-                texture.flip_vertically();
-                std::cout << "\tTexture " << p << " loaded. Size " << texture.get_width() << 'x' << texture.get_height() << ".\n";
+                load_texture(diffuse, path, token);
             }
             else
             {
@@ -67,6 +64,14 @@ ObjModel::ObjModel(const std::string &path)
     std::cout << "\tUVs parsed: " << uvs.size() << '\n';
     std::cout << "\tNormals parsed: " << normals.size() << '\n';
     std::cout << "\tFaces parsed: " << faces.size() << '\n';
+}
+
+void ObjModel::load_texture(TgaImage &tex, const std::string &path, const std::string &name) const
+{
+    auto p = std::filesystem::path(path).parent_path().append(name).string();
+    tex.read_tga_file(p.c_str());
+    tex.flip_vertically();
+    std::cout << "\tTexture " << p << " loaded. Size " << diffuse.get_width() << 'x' << diffuse.get_height() << ".\n";
 }
 
 void ObjModel::parse_face_vertx(std::istringstream &s)

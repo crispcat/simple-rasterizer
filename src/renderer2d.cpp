@@ -3,9 +3,9 @@
 void RenderContext::line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
     ScreenLine l(x0, y0, x1, y1);
-    pixel(l.x, l.y, color);
+    pixel(l.x, l.y, foregr_color);
     while (l.move())
-        pixel(l.x, l.y, color);
+        pixel(l.x, l.y, foregr_color);
 }
 
 void RenderContext::triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
@@ -14,7 +14,7 @@ void RenderContext::triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16
     {
         if (y1 < y0) std::swap(y1, y0);
         for (uint16_t y = y0; y <= y1; y++)
-            pixel(x, y, color);
+            pixel(x, y, foregr_color);
     };
 
     if (x2 < x0) { std::swap(x2, x0); std::swap(y2, y0); }
@@ -25,7 +25,7 @@ void RenderContext::triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16
     ScreenLine bc(x1,y1, x2,y2);
     ScreenLine ac(x0,y0, x2,y2);
 
-    pixel(ac.x, ac.y, color);
+    pixel(ac.x, ac.y, foregr_color);
 
     uint16_t x_prev = ac.x;
     while (ab.move())
