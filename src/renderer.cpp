@@ -7,7 +7,9 @@ RenderContext::RenderContext(uint32_t *frame_buff, uint16_t width, uint16_t heig
     h(),
     tex_scale { },
     z_buff(nullptr),
-    f_buff(nullptr) {
+    f_buff(nullptr),
+    frag_locks(nullptr),
+    t_pool { } {
     set_buff(frame_buff, width, height);
 };
 
@@ -17,7 +19,9 @@ void RenderContext::set_buff(uint32_t *frame_buff, uint16_t width, uint16_t heig
     h = height;
     f_buff = frame_buff;
     delete[] z_buff; z_buff = new float[w * h];
-    screen_scale = {(float)w / 2, (float)h / 2, 1.f };
+    delete[] frag_locks; frag_locks = new std::atomic_flag[w * h];
+    for (uint32_t i = 0; i < w * h; i++) frag_locks[i].clear();
+    screen_scale = { (float)w / 2, (float)h / 2, 1.f };
 }
 
 void RenderContext::set_tex(const TgaImage &t)
@@ -29,12 +33,13 @@ void RenderContext::set_tex(const TgaImage &t)
 RenderContext::~RenderContext()
 {
     delete[] z_buff;
+    delete[] frag_locks;
 }
 
-void RenderContext::frame()
+void RenderContext::sta_fr()
 {
-    std::fill(f_buff, f_buff + w * h, backgr_color);
     std::fill(z_buff, z_buff + w * h, -clipping_plane);
+    std::fill(f_buff, f_buff + w * h, backgr_color);
 }
 
 void RenderContext::pixel(uint16_t x, uint16_t y, Color32 c)

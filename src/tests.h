@@ -6,7 +6,7 @@
 
 void draw_primitives_triangles(RenderContext &c)
 {
-    c.frame();
+    c.sta_fr();
     c.foregr_color = COLOR_WHITE;
     c.triangle_lined(10,70, 50,160, 70,80);
     c.triangle_lined(180,50, 150,1, 70,180);
@@ -27,7 +27,7 @@ void draw_primitives_triangles(RenderContext &c)
 
 void draw_primitives_lines(RenderContext &c)
 {
-    c.frame();
+    c.sta_fr();
     c.foregr_color = COLOR_GREEN;
     c.line(50, 50, 75, 75);
     c.line(50, 50, 75, 25);

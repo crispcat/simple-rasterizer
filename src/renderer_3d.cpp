@@ -8,8 +8,9 @@ void RenderContext::drawcall()
         std::array<Vert, 3> vs { Vert(vertices[faces[i].iv],   normals[faces[i].in],   uvs[faces[i].iuv]),
                                  Vert(vertices[faces[i+1].iv], normals[faces[i+1].in], uvs[faces[i+1].iuv]),
                                  Vert(vertices[faces[i+2].iv], normals[faces[i+2].in], uvs[faces[i+2].iuv]) };
-        triangle(vs);
+        t_pool.push_task(&RenderContext::triangle, this, vs);
     }
+    t_pool.wait_for_tasks();
 }
 
 void RenderContext::triangle(std::array<Vert, 3>  vs)
@@ -48,12 +49,14 @@ void RenderContext::frag(Frag &f)
 {
     auto &v = f.v;
     float z = geometry::dot(f.bcentr, { v[0].pos.z, v[1].pos.z, v[2].pos.z });
-    uint32_t i = f.pix.y * h + f.pix.x;
-    if (z <= z_buff[i]) return;
-    z_buff[i] = z;
+    uint32_t fi = f.pix.y * h + f.pix.x;
+    while (frag_locks[fi].test_and_set()) ;
+    if (z <= z_buff[fi]) { frag_locks[fi].clear(); return; }
+    z_buff[fi] = z;
     apply_texture(f);
     gouroud_light(f);
     pixel(f.pix.x, f.pix.y, f.color);
+    frag_locks[fi].clear();
 }
 
 void RenderContext::apply_texture(Frag &f) const

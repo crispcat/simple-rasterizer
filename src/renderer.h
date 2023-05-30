@@ -5,6 +5,7 @@
 #include <memory>
 #include "geometry.h"
 #include "tgaimage.h"
+#include "thread_pool.h"
 #include "renderer_structs.h"
 
 class RenderContext
@@ -25,8 +26,8 @@ public:
     virtual ~RenderContext();
     void set_tex(const TgaImage &t);
     void set_buff(uint32_t *frame_buff, uint16_t width, uint16_t height);
-    void frame();
-    void render() { frame(); drawcall(); }
+    void sta_fr();
+    void render() { sta_fr(); drawcall(); }
 public:
     void line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
     void triangle_lined(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
@@ -47,6 +48,8 @@ protected:
     Vec3 screen_scale;
     float *z_buff;
     uint32_t *f_buff;
+    std::atomic_flag *frag_locks;
+    BS::thread_pool_light t_pool;
 protected:
     void vert(Vert &v) const;
     void frag(Frag &f);

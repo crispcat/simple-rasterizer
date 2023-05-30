@@ -38,7 +38,7 @@ release: CXXFLAGS += -O3 -D RELEASE
 release: $(DST_DIR)$(TARGET_RELEASE) $(RESOURCES)
 
 debug: LDFLAGS += -g -ggdb -pg
-debug: CXXFLAGS += -O3 -g -ggdb -pg -O0 -D DEBUG -D PROFILE
+debug: CXXFLAGS += -O0 -g -ggdb -pg -O0 -D DEBUG -D PROFILE
 debug: $(DST_DIR)$(TARGET_DEBUG) $(RESOURCES)
 
 $(DST_DIR)$(TARGET_RELEASE): $(OBJ_RELEASE)
