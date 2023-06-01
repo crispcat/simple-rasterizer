@@ -88,6 +88,6 @@ void ObjModel::parse_face_vertx(std::istringstream &s)
             else
                 s >> ivec.iuv >> ch >> ivec.in;
         }
-        faces.push_back(ivec - Vec3IntOne); // sub to make indexes start from 0
+        faces.push_back(ivec - Vec3::one()); // sub to make indexes start from 0
     }
 }

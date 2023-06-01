@@ -15,8 +15,7 @@ public:
     std::vector<Vec2> uvs{};
     std::vector<Vec3> normals{};
     std::vector<Vec3Int> faces{};
-    Vec3 light_dir { 0.f, 0.f, -1.f };
-    float camera_distance = 2.f;  // from origin
+    Vec3 light_dir = Vec3::back();
     float clipping_plane = 3.f;   // far
 public:
     Color32 foregr_color = COLOR_WHITE;
@@ -26,6 +25,7 @@ public:
     virtual ~RenderContext();
     void set_tex(const TgaImage &t);
     void set_buff(uint32_t *frame_buff, uint16_t width, uint16_t height);
+    void set_cam(Vec3 eye, Vec3 center, Vec3 up);
     void sta_fr();
     void render() { sta_fr(); drawcall(); }
 public:
@@ -50,6 +50,9 @@ protected:
     uint32_t *f_buff;
     std::atomic_flag *frag_locks;
     BS::thread_pool_light t_pool;
+protected:
+    Matrix<4, 4, float> view;
+    Matrix<4, 4, float> proj;
 protected:
     void vert(Vert &v) const;
     void frag(Frag &f);

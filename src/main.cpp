@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 {
     if (argc < 3)
     {
-        std::cerr << "Arguments are ('rt'|'tga') 'model_path' 'width' 'height' all required.\n";
+        std::cerr << "Arguments are ('rt'|'tga'|'tests') 'model_path' 'width' 'height' all required.\n";
         return 1;
     }
 
@@ -43,12 +43,24 @@ int main(int argc, char **argv)
         Fenster fenster(w, h, "simple-rasterizer");
         RenderContext context(fenster.getbuff(), w, h);
         set_model(context, model);
+        Vec3 camera_pos(0.f, 0.f, 1.5f);
+        Vec3 mouse_pos(fenster.x(), fenster.y(), 0.f);
+        Vec3 p_to_rads(2 * M_PIf / w, 2 * M_PIf / h, 1.f);
+        Vec3 rads;
         FPS_MON_INIT
         while (fenster_loop(&fenster.f) == 0)
         {
             FPS_MON_FRAME_START
             context.render();
             FPS_MON_FRAME_END
+            Vec3 new_pos(fenster.x(), fenster.y(), 1.f);
+            if (fenster.mouse())
+            {
+                rads += (new_pos - mouse_pos).scale(p_to_rads);
+                Vec3 r_camera_pos = transform(camera_pos, rotate( { -rads.y, -rads.x, 0.f } ));
+                context.set_cam(r_camera_pos, Vec3::zero(), Vec3::up());
+            }
+            mouse_pos = new_pos;
         }
     }
     else if (mode == "tga")

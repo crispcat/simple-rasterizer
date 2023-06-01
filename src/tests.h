@@ -62,7 +62,7 @@ void calc_vectors()
     std::cout << "Vec2Int:\n";
     std::cout << vec2intA << " + " << vec2intB << " = " << vec2intA + vec2intB << '\n';
     std::cout << vec2intA << " - " << vec2intB << " = " << vec2intA - vec2intB << '\n';
-    std::cout << vec2intA << " dot " << vec2intB << " = " << geometry::dot(vec2intA, vec2intB) << '\n';
+    std::cout << vec2intA << " dot " << vec2intB << " = " << dot(vec2intA, vec2intB) << '\n';
     std::cout << "norm" << vec2intA << " = " << vec2intA.norm() << '\n';
     std::cout << "sqnorm" << vec2intA << " = " << vec2intA.sqnorm() << '\n';
     std::cout << "normalized" << vec2intA << " = " << vec2intA.normalized() << '\n';
@@ -73,7 +73,7 @@ void calc_vectors()
     std::cout << "Vec2:\n";
     std::cout << vec2floatA << " + " << vec2floatB << " = " << vec2floatA + vec2floatB << '\n';
     std::cout << vec2floatA << " - " << vec2floatB << " = " << vec2floatA - vec2floatB << '\n';
-    std::cout << vec2floatA << " dot " << vec2floatB << " = " << geometry::dot(vec2floatA, vec2floatB) << '\n';
+    std::cout << vec2floatA << " dot " << vec2floatB << " = " << dot(vec2floatA, vec2floatB) << '\n';
     std::cout << "norm" << vec2floatA << " = " << vec2floatA.norm() << '\n';
     std::cout << "sqnorm" << vec2floatA << " = " << vec2floatA.sqnorm() << '\n';
     std::cout << "normalized" << vec2floatA << " = " << vec2floatA.normalized() << '\n';
@@ -84,8 +84,8 @@ void calc_vectors()
     std::cout << "Vec3Int:\n";
     std::cout << vec3intA << " + " << vec3intB << " = " << vec3intA + vec3intB << '\n';
     std::cout << vec3intA << " - " << vec3intB << " = " << vec3intA - vec3intB << '\n';
-    std::cout << vec3intA << " dot " << vec3intB << " = " << geometry::dot(vec3intA, vec3intB) << '\n';
-    std::cout << vec3intA << " cross " << vec3intB << " = " << geometry::cross(vec3intA, vec3intB) << '\n';
+    std::cout << vec3intA << " dot " << vec3intB << " = " << dot(vec3intA, vec3intB) << '\n';
+    std::cout << vec3intA << " cross " << vec3intB << " = " << cross(vec3intA, vec3intB) << '\n';
     std::cout << "norm" << vec3intA << " = " << vec3intA.norm() << '\n';
     std::cout << "sqnorm" << vec3intA << " = " << vec3intA.sqnorm() << '\n';
     std::cout << "normalized" << vec3intA << " = " << vec3intA.normalized() << '\n';
@@ -96,8 +96,8 @@ void calc_vectors()
     std::cout << "Vec3:\n";
     std::cout << vec3floatA << " + " << vec3floatB << " = " << vec3floatA + vec3floatB << '\n';
     std::cout << vec3floatA << " - " << vec3floatB << " = " << vec3floatA - vec3floatB << '\n';
-    std::cout << vec3floatA << " dot " << vec3floatB << " = " << geometry::dot(vec3floatA, vec3floatB) << '\n';
-    std::cout << vec3floatA << " cross " << vec3floatB << " = " << geometry::cross(vec3floatA, vec3floatB) << '\n';
+    std::cout << vec3floatA << " dot " << vec3floatB << " = " << dot(vec3floatA, vec3floatB) << '\n';
+    std::cout << vec3floatA << " cross " << vec3floatB << " = " << cross(vec3floatA, vec3floatB) << '\n';
     std::cout << "norm" << vec3floatA << " = " << vec3floatA.norm() << '\n';
     std::cout << "sqnorm" << vec3floatA << " = " << vec3floatA.sqnorm() << '\n';
     std::cout << "normalized" << vec3floatA << " = " << vec3floatA.normalized() << '\n';

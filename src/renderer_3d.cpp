@@ -13,6 +13,24 @@ void RenderContext::drawcall()
     t_pool.wait_for_tasks();
 }
 
+void RenderContext::set_cam(Vec3 eye, Vec3 center, Vec3 up)
+{
+    Vec3 z = (eye - center).normalized();
+    Vec3 x = cross(up, z).normalized();
+    Vec3 y = cross(z, x).normalized();
+    auto base = Matrix<4, 4, float>::identity();
+    auto tran = Matrix<4, 4, float>::identity();
+    for (int i = 0; i < 3; i++)
+    {
+        base[0][i] = x[i];
+        base[1][i] = y[i];
+        base[2][i] = z[i];
+        tran[i][3] = -eye[i];
+    }
+    view = base * tran;
+    proj = perspective((eye - center).norm());
+}
+
 void RenderContext::triangle(std::array<Vert, 3>  vs)
 {
     vert(vs[0]);
@@ -33,7 +51,7 @@ void RenderContext::triangle(std::array<Vert, 3>  vs)
     {
         if (x <= 0 || y <= 0 || x >= w || y >= h) continue;
         ScreenPoint pix(x, y);
-        Vec3 bcentr = geometry::barycentric_screen(pix, svs[0], svs[1], svs[2]);
+        Vec3 bcentr = barycentric_screen(pix, svs[0], svs[1], svs[2]);
         if (bcentr.x < 0 || bcentr.y < 0 || bcentr.z < 0) continue;
         Frag f(pix, foregr_color, bcentr, vs);
         frag(f);
@@ -42,13 +60,13 @@ void RenderContext::triangle(std::array<Vert, 3>  vs)
 
 void RenderContext::vert(Vert &v) const
 {
-    transform(v.pos, transformer::perspective(camera_distance));
+    v.pos = transform(v.pos, proj * view);
 }
 
 void RenderContext::frag(Frag &f)
 {
     auto &v = f.v;
-    float z = geometry::dot(f.bcentr, { v[0].pos.z, v[1].pos.z, v[2].pos.z });
+    float z = dot(f.bcentr, { v[0].pos.z, v[1].pos.z, v[2].pos.z });
     uint32_t fi = f.pix.y * h + f.pix.x;
     while (frag_locks[fi].test_and_set()) ;
     if (z <= z_buff[fi]) { frag_locks[fi].clear(); return; }
@@ -62,8 +80,8 @@ void RenderContext::frag(Frag &f)
 void RenderContext::apply_texture(Frag &f) const
 {
     auto &v = f.v;
-    float pu = geometry::dot(f.bcentr, { v[0].tex.u, v[1].tex.u, v[2].tex.u });
-    float pv = geometry::dot(f.bcentr, { v[0].tex.v, v[1].tex.v, v[2].tex.v });
+    float pu = dot(f.bcentr, { v[0].tex.u, v[1].tex.u, v[2].tex.u });
+    float pv = dot(f.bcentr, { v[0].tex.v, v[1].tex.v, v[2].tex.v });
     Vec2Int tcoord = Vec2(pu, pv).scale(tex_scale).apply(std::round);
     f.color = tex.get(tcoord.u, tcoord.v).val;
 }
@@ -71,33 +89,33 @@ void RenderContext::apply_texture(Frag &f) const
 void RenderContext::flat_light(Frag &f) const
 {
     auto &v = f.v;
-    Vec3 n = geometry::cross(v[2].pos - v[0].pos, v[1].pos - v[0].pos).normalized();
-    float l = calc::clamp0(geometry::dot(light_dir, n));
+    Vec3 n = cross(v[2].pos - v[0].pos, v[1].pos - v[0].pos).normalized();
+    float l = clamp0(dot(light_dir, n));
     f.color = f.color.vecf().scale(l);
 }
 
 void RenderContext::gouroud_light(Frag &f) const
 {
     auto &v = f.v;
-    float l0 = calc::clamp0(geometry::dot(light_dir, v[0].norm));
-    float l1 = calc::clamp0(geometry::dot(light_dir, v[1].norm));
-    float l2 = calc::clamp0(geometry::dot(light_dir, v[2].norm));
-    float l = geometry::dot(f.bcentr, { l0, l1, l2 });
+    float l0 = clamp0(dot(light_dir, v[0].norm));
+    float l1 = clamp0(dot(light_dir, v[1].norm));
+    float l2 = clamp0(dot(light_dir, v[2].norm));
+    float l  = dot(f.bcentr, { l0, l1, l2 });
     f.color = f.color.vecf().scale(l);
 }
 
 void RenderContext::fong_light(Frag &f) const
 {
     auto &v = f.v;
-    Vec3 n = { geometry::dot(f.bcentr, { v[0].norm.x, v[1].norm.x, v[2].norm.x }),
-               geometry::dot(f.bcentr, { v[0].norm.y, v[1].norm.y, v[2].norm.y }),
-               geometry::dot(f.bcentr, { v[0].norm.z, v[1].norm.z, v[2].norm.z }) };
-    float l = calc::clamp0(geometry::dot(light_dir, n));
+    Vec3 n = { dot(f.bcentr, { v[0].norm.x, v[1].norm.x, v[2].norm.x }),
+               dot(f.bcentr, { v[0].norm.y, v[1].norm.y, v[2].norm.y }),
+               dot(f.bcentr, { v[0].norm.z, v[1].norm.z, v[2].norm.z }) };
+    float l = clamp0(dot(light_dir, n));
     f.color = f.color.vecf().scale(l);
 }
 
 Vec2Int RenderContext::transform2screen(Vec3 v) const
 {
-    Vec3 sv = (v + Vec3One).scale(screen_scale).apply(std::round);
+    Vec3 sv = (v + Vec3::one()).scale(screen_scale).apply(std::round);
     return (Vec2Int) sv;
 }
