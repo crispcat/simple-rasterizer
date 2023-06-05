@@ -31,6 +31,7 @@ struct Vector2
     void operator -= (Vector2<T> v) { x -= v.x; y -= v.y; }
 
     Vector2<T> operator - () const { return Vector2<T>(-x, -y); }
+
     Vector2<T> scale(T s) const { return Vector2<T>(x * s, y * s); }
     Vector2<T> scale(T sx, T sy) const { return Vector2<T>(x * sx, y * sy); }
     Vector2<T> scale(Vector2<T> s) const { return Vector2<T>(x * s.x, y * s.y); }
@@ -80,9 +81,9 @@ struct Vector3
     void operator += (Vector3<T> v) { x += v.x; y += v.y; z += v.z; }
     void operator -= (Vector3<T> v) { x -= v.x; y -= v.y; z -= v.z; }
 
+    Vector3<T> scale(Vector3<T> s) const { return Vector3<T>(x * s.x, y * s.y, z * s.z); }
     Vector3<T> scale(T s) { return Vector3<T>(x * s, y * s, z * s); }
     Vector3<T> scale(T sx, T sy, T sz) const { return Vector3<T>(x * sx, y * sy, z * sz); }
-    Vector3<T> scale(Vector3<T> s) const { return Vector3<T>(x * s.x, y * s.y, z * s.z); }
 
     float_t norm() const { return std::sqrt(sqnorm()); }
     T sqnorm() const { return x * x + y * y + z * z; }
@@ -161,14 +162,14 @@ Vector3<T> cross(Vector3<T> a, Vector3<T> b)
 //
 //  (u, v, 1) = (AB(x), AC(x), PA(x)) cross (AB(y), AC(y), PA(y))
 //
-inline Vec3 barycentric_screen(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint c)
+inline Vec3 barycentric(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint c)
 {
     Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, p.x - a.x),
                        Vec3Int(b.y - a.y, c.y - a.y, p.y - a.y));
     if (uv.z == 0)
         return {-1, 1, 1};
 
-    // norm is actually flipped, so z coordinate will be negative
+    // norm is actually flipped
     return { 1.f - (float)(uv.x + uv.y) / -uv.z, (float)uv.x / -uv.z, (float)uv.y / -uv.z };
 }
 
@@ -177,7 +178,11 @@ struct Matrix
 {
     static const size_t SIZE = N * M;
 
-    T el[SIZE];
+    union
+    {
+        T el[SIZE];
+        struct { T x, y, z, t; };
+    };
 
     Matrix() : el { 0 } { }
 
@@ -189,6 +194,14 @@ struct Matrix
     Matrix(std::initializer_list<T> il) : el { 0 }
     {
         std::move(il.begin(), il.end(), el);
+    }
+
+    explicit Matrix(Vector3<T> vec) : Matrix({ vec.x, vec.y, vec.z, 1.f }) { }
+
+    Vector3<T> proj3d()
+    {
+        static_assert(N == 4 && M == 1, "only homogeneous matrix 4 x 1 can be projected back to 3d");
+        return { x / t, y / t, z / t };
     }
 
     T* operator [] (size_t i)
@@ -247,69 +260,50 @@ struct Matrix
     friend inline std::ostream& operator << (std::ostream &s, Matrix<N, M, T> m);
 };
 
-inline Vec3 transform(Vec3 vec, Matrix<4, 4, float> transformer)
+using Hom = Matrix<4, 1, float>;
+using Transform = Matrix<4, 4, float>;
+
+inline Transform translate(Vec3 delta)
 {
-    Matrix<4, 1, float> hom { vec.x, vec.y, vec.z, 1.f };
-    hom = transformer * hom;
-    vec.x = hom[0][0] / hom[3][0];
-    vec.y = hom[1][0] / hom[3][0];
-    vec.z = hom[2][0] / hom[3][0];
-    return vec;
+    float &x = delta.x;
+    float &y = delta.y;
+    float &z = delta.z;
+    return { 1, 0, 0, x,
+             0, 1, 0, y,
+             0, 0, 1, z,
+             0, 0, 0, 1 };
 }
 
-inline Matrix<4, 4, float> translate(Vec3 delta)
+inline Transform scale(Vec3 scale)
 {
-    auto tr_m = Matrix<4, 4, float>::identity();
-    for (int i = 0; i < 3; i++)
-        tr_m[i][3] = delta[i];
-    return tr_m;
+    float &x = scale.x;
+    float &y = scale.y;
+    float &z = scale.z;
+    return { x, 0, 0, 0,
+             0, y, 0, 0,
+             0, 0, z, 0,
+             0, 0, 0, 1 };
 }
 
-inline Matrix<4, 4, float> scale(Vec3 scale)
+inline Transform rotate(Vec3 axis, float angle)
 {
-    auto tr_m = Matrix<4, 4, float>::identity();
-    for (int i = 0; i < 3; i++)
-        tr_m[i][i] = scale[i];
-    return tr_m;
+    float c = cos(angle);
+    float s = sin(angle);
+    float _1_c = 1 - c;
+    Vec3 &a = axis;
+    return { (c + a.x * a.x * _1_c), (a.x * a.y * _1_c - a.z * s), (a.x * a.z * _1_c + a.y * s), 0,
+             (a.y * a.x * _1_c + a.z * s), (c + a.y * a.y * _1_c), (a.y * a.z * _1_c - a.x * s), 0,
+             (a.z * a.x * _1_c - a.y * s), (a.z * a.y * _1_c + a.x * s), (c + a.z * a.z * _1_c), 0,
+             0, 0, 0, 1 };
 }
 
-inline Matrix<4, 4, float> rotate_x(float angle, bool deg = false)
+inline Transform perspective(float c_dist)
 {
-    if (deg) angle *= M_PIf / 180;
-    auto rot_m = Matrix<4, 4, float>::identity();
-    rot_m[1][1] = std::cos(angle); rot_m[1][2] = -std::sin(angle);
-    rot_m[2][1] = std::sin(angle); rot_m[2][2] =  std::cos(angle);
-    return rot_m;
-}
-
-inline Matrix<4, 4, float> rotate_y(float angle, bool deg = false)
-{
-    if (deg) angle *= M_PIf / 180;
-    auto rot_m = Matrix<4, 4, float>::identity();
-    rot_m[0][1] =  std::cos(angle); rot_m[0][2] = std::sin(angle);
-    rot_m[2][0] = -std::sin(angle); rot_m[2][2] = std::cos(angle);
-    return rot_m;
-}
-
-inline Matrix<4, 4, float> rotate_z(float angle, bool deg = false)
-{
-    if (deg) angle *= M_PIf / 180;
-    auto rot_m = Matrix<4, 4, float>::identity();
-    rot_m[0][0] = std::cos(angle); rot_m[0][1] = -std::sin(angle);
-    rot_m[1][0] = std::sin(angle); rot_m[1][1] =  std::cos(angle);
-    return rot_m;
-}
-
-inline Matrix<4, 4, float> rotate(Vec3 angles, bool deg = false)
-{
-    return rotate_x(angles.x, deg) * rotate_y(angles.y, deg) * rotate_z(angles.z, deg);
-}
-
-inline Matrix<4, 4, float> perspective(float c_dist)
-{
-    auto id = Matrix<4, 4, float>::identity();
-    id[3][2] = -1.f / c_dist;
-    return id;
+    float c = -1.f / c_dist;
+    return { 1,   0,   0,   0,
+             0,  -1,   0,   0,
+             0,   0,   1,   0,
+             0,   0,   c,   1 };
 }
 
 template <class T>
@@ -322,6 +316,12 @@ template <class T>
 inline T clamp01(T val)
 {
     return val < 0 ? 0 : val > 1 ? 1 : val;
+}
+
+template <class T>
+inline T clamp(T val, T min, T max)
+{
+    return val < min ? min : val > max ? max : val;
 }
 
 template<typename T>

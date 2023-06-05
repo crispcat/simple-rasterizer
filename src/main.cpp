@@ -1,25 +1,9 @@
 #include <iostream>
+#include "tests.h"
+#include "fpsmon.h"
 #include "fenster.h"
 #include "renderer.h"
 #include "objmodel.h"
-#include "tests.h"
-
-#define FPS_MON_INIT \
-    int frames = 0; \
-    int64_t ttf_accum = 0;
-
-#define FPS_MON_FRAME_START \
-    int64_t f_start = fenster_time();
-
-#define FPS_MON_FRAME_END \
-    ttf_accum += fenster_time() - f_start; \
-    frames++; \
-    if (ttf_accum >= 1000) \
-    { \
-        std::cout << "FPS: " << frames << " TTF: " << ttf_accum / frames << " ms." << '\n'; \
-        ttf_accum = 0; \
-        frames = 0; \
-    } \
 
 void set_model(RenderContext &c, const ObjModel &m);
 
@@ -43,10 +27,9 @@ int main(int argc, char **argv)
         Fenster fenster(w, h, "simple-rasterizer");
         RenderContext context(fenster.getbuff(), w, h);
         set_model(context, model);
-        Vec3 camera_pos(0.f, 0.f, 1.5f);
+        Hom camera_pos(Vec3(0.f, 0.f, 1.5f));
+        context.set_cam(camera_pos.proj3d(), Vec3::zero(), Vec3::up());
         Vec3 mouse_pos(fenster.x(), fenster.y(), 0.f);
-        Vec3 p_to_rads(2 * M_PIf / w, 2 * M_PIf / h, 1.f);
-        Vec3 rads;
         FPS_MON_INIT
         while (fenster_loop(&fenster.f) == 0)
         {
@@ -56,9 +39,13 @@ int main(int argc, char **argv)
             Vec3 new_pos(fenster.x(), fenster.y(), 1.f);
             if (fenster.mouse())
             {
-                rads += (new_pos - mouse_pos).scale(p_to_rads);
-                Vec3 r_camera_pos = transform(camera_pos, rotate( { -rads.y, -rads.x, 0.f } ));
-                context.set_cam(r_camera_pos, Vec3::zero(), Vec3::up());
+                Vec3 m_delta = new_pos - mouse_pos;
+                float m_dist = m_delta.norm();
+                if (m_dist == 0.f) continue;
+                float angle = m_dist * 2*M_PIf/w;
+                Vec3 m_dir = m_delta.normalized();
+                camera_pos = rotate({ m_dir.y, m_dir.x, 0.f }, -angle) * camera_pos;
+                context.set_cam(camera_pos.proj3d(), Vec3::zero(), Vec3::up());
             }
             mouse_pos = new_pos;
         }

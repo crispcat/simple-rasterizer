@@ -16,7 +16,7 @@ public:
     std::vector<Vec3> normals{};
     std::vector<Vec3Int> faces{};
     Vec3 light_dir = Vec3::back();
-    float clipping_plane = 3.f;   // far
+    float clipping_plane = 255.f;   // far
 public:
     Color32 foregr_color = COLOR_WHITE;
     Color32 backgr_color = COLOR_BLACK;
@@ -26,6 +26,7 @@ public:
     void set_tex(const TgaImage &t);
     void set_buff(uint32_t *frame_buff, uint16_t width, uint16_t height);
     void set_cam(Vec3 eye, Vec3 center, Vec3 up);
+    void set_viewport(float w, float h);
     void sta_fr();
     void render() { sta_fr(); drawcall(); }
 public:
@@ -37,15 +38,14 @@ public:
     void triangle(std::array<Vert, 3>  vs);
 protected:
     void apply_texture(Frag &f) const;
-    void flat_light(Frag &f) const ;
-    void gouroud_light(Frag &f) const ;
+    void flat_light(Frag &f) const;
+    void gouroud_light(Frag &f) const;
     void fong_light(Frag &f) const;
 protected:
     uint16_t w;
     uint16_t h;
     TgaImage tex;
     Vec2 tex_scale;
-    Vec3 screen_scale;
     float *z_buff;
     uint32_t *f_buff;
     std::atomic_flag *frag_locks;
@@ -53,11 +53,11 @@ protected:
 protected:
     Matrix<4, 4, float> view;
     Matrix<4, 4, float> proj;
+    Matrix<4, 4, float> viewport;
 protected:
     void vert(Vert &v) const;
     void frag(Frag &f);
     virtual void pixel(uint16_t x, uint16_t y, Color32 c);
-    Vec2Int transform2screen(Vec3 v) const;
 };
 
 #endif //SIMPLE_RASTERIZER_RENDERER_H

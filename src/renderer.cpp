@@ -21,8 +21,8 @@ void RenderContext::set_buff(uint32_t *frame_buff, uint16_t width, uint16_t heig
     delete[] z_buff; z_buff = new float[w * h];
     delete[] frag_locks; frag_locks = new std::atomic_flag[w * h];
     for (uint32_t i = 0; i < w * h; i++) frag_locks[i].clear();
-    screen_scale = { (float)w / 2, (float)h / 2, 1.f };
     set_cam({ 0.f, 0.f, 1.f }, Vec3::zero(), Vec3::up());
+    set_viewport(w, h);
 }
 
 void RenderContext::set_tex(const TgaImage &t)
@@ -45,6 +45,6 @@ void RenderContext::sta_fr()
 
 void RenderContext::pixel(uint16_t x, uint16_t y, Color32 c)
 {
-    f_buff[(h - y) * w + x] = c;
+    f_buff[y * w + x] = c;
 }
 
