@@ -2,6 +2,7 @@
 #define SIMPLE_RASTERIZER_GEOMETRY_H
 
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 
 template<typename T> struct Vector2;
@@ -173,10 +174,10 @@ inline Vec3 barycentric(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint
     return { 1.f - (float)(uv.x + uv.y) / -uv.z, (float)uv.x / -uv.z, (float)uv.y / -uv.z };
 }
 
-template </*ROWS*/size_t N,/*COLS*/size_t M, typename T>
+template <size_t ROWS, size_t COLS, typename T>
 struct Matrix
 {
-    static const size_t SIZE = N * M;
+    static const size_t SIZE = ROWS * COLS;
 
     union
     {
@@ -200,64 +201,64 @@ struct Matrix
 
     Vector3<T> proj3d()
     {
-        static_assert(N == 4 && M == 1, "only homogeneous matrix 4 x 1 can be projected back to 3d");
+        static_assert(ROWS == 4 && COLS == 1, "only homogeneous matrix 4 x 1 can be projected back to 3d");
         return { x / t, y / t, z / t };
     }
 
     T* operator [] (size_t i)
     {
-        return el + i * M;
+        return el + i * COLS;
     }
 
-    void operator += (Matrix<N, M, T> m)
+    void operator += (Matrix<ROWS, COLS, T> m)
     {
         for (size_t i = 0; i < SIZE; i++)
             el[i] += m.el[i];
     }
 
-    void operator -= (Matrix<N, M, T> m)
+    void operator -= (Matrix<ROWS, COLS, T> m)
     {
         for (size_t i = 0; i < SIZE; i++)
             el[i] -= m.el[i];
     }
 
-    Matrix<N, M, T> operator + (Matrix<N, M, T> m) const
+    Matrix<ROWS, COLS, T> operator + (Matrix<ROWS, COLS, T> m) const
     {
-        Matrix<N, M, T> res;
+        Matrix<ROWS, COLS, T> res;
         for (size_t i = 0; i < SIZE; i++)
             res[i] = el[i] + m.el[i];
         return res;
     }
 
-    Matrix<N, M, T> operator - (Matrix<N, M, T> m) const
+    Matrix<ROWS, COLS, T> operator - (Matrix<ROWS, COLS, T> m) const
     {
-        Matrix<N, M, T> res;
+        Matrix<ROWS, COLS, T> res;
         for (size_t i = 0; i < SIZE; i++)
             res[i] = el[i] - m.el[i];
         return res;
     }
 
     template<size_t L>
-    Matrix<N, L, T> operator * (Matrix<M, L, T> m) const
+    Matrix<ROWS, L, T> operator * (Matrix<COLS, L, T> m) const
     {
-        Matrix<N, L, T> res;
-        for (size_t i = 0; i < N * L; i++)
-            for (size_t j = 0; j < M; j++)
-                res.el[i] += el[(i / L) * M + j] * m.el[j * L + (i % L)];
+        Matrix<ROWS, L, T> res;
+        for (size_t i = 0; i < ROWS * L; i++)
+            for (size_t j = 0; j < COLS; j++)
+                res.el[i] += el[(i / L) * COLS + j] * m.el[j * L + (i % L)];
         return res;
     }
 
-    static constexpr Matrix<N, M, T> identity()
+    static constexpr Matrix<ROWS, COLS, T> identity()
     {
-        static_assert(N == M, "identity matrix construction require a square matrix type");
-        Matrix<N, M, T> id;
-        for (size_t i = 0; i < SIZE; i += N + 1)
+        static_assert(ROWS == COLS, "identity matrix construction require a square matrix type");
+        Matrix<ROWS, COLS, T> id;
+        for (size_t i = 0; i < SIZE; i += ROWS + 1)
             id.el[i] = 1;
         return id;
     }
 
     template<typename>
-    friend inline std::ostream& operator << (std::ostream &s, Matrix<N, M, T> m);
+    friend inline std::ostream& operator << (std::ostream &s, Matrix<ROWS, COLS, T> m);
 };
 
 using Hom = Matrix<4, 1, float>;

@@ -27,26 +27,34 @@ int main(int argc, char **argv)
         Fenster fenster(w, h, "simple-rasterizer");
         RenderContext context(fenster.getbuff(), w, h);
         set_model(context, model);
+
         Hom camera_pos(Vec3(0.f, 0.f, 1.5f));
         context.set_cam(camera_pos.proj3d(), Vec3::zero(), Vec3::up());
+
         Vec3 mouse_pos(fenster.x(), fenster.y(), 0.f);
+
         FPS_MON_INIT
+
         while (fenster_loop(&fenster.f) == 0)
         {
             FPS_MON_FRAME_START
             context.render();
             FPS_MON_FRAME_END
+
             Vec3 new_pos(fenster.x(), fenster.y(), 1.f);
+
             if (fenster.mouse())
             {
                 Vec3 m_delta = new_pos - mouse_pos;
                 float m_dist = m_delta.norm();
                 if (m_dist == 0.f) continue;
-                float angle = m_dist * 2*M_PIf/w;
+                float angle = m_dist * 2 * M_PIf/w;
                 Vec3 m_dir = m_delta.normalized();
+
                 camera_pos = rotate({ m_dir.y, m_dir.x, 0.f }, -angle) * camera_pos;
                 context.set_cam(camera_pos.proj3d(), Vec3::zero(), Vec3::up());
             }
+
             mouse_pos = new_pos;
         }
     }
@@ -54,8 +62,10 @@ int main(int argc, char **argv)
     {
         TgaImage image(w, h, TgaImage::Format::RGBA);
         RenderContext context((uint32_t*)image.buffer(), w, h);
+
         set_model(context, model);
         context.render();
+
         image.write_tga_file("output.tga");
         std::cout << "Model rendered to output.tga" << std::endl;
     }
