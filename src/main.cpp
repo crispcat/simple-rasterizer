@@ -4,6 +4,7 @@
 #include "fenster.h"
 #include "renderer.h"
 #include "objmodel.h"
+#include "fpsmon.h"
 
 void set_model(RenderContext &c, const ObjModel &m);
 
@@ -33,13 +34,12 @@ int main(int argc, char **argv)
 
         Vec3 mouse_pos(fenster.x(), fenster.y(), 0.f);
 
-        FPS_MON_INIT
-
+        FPSMon fps_mon;
         while (fenster_loop(&fenster.f) == 0)
         {
-            FPS_MON_FRAME_START
+            fps_mon.frame_start();
             context.render();
-            FPS_MON_FRAME_END
+            fps_mon.frame_end();
 
             Vec3 new_pos(fenster.x(), fenster.y(), 1.f);
 
@@ -47,7 +47,10 @@ int main(int argc, char **argv)
             {
                 Vec3 m_delta = new_pos - mouse_pos;
                 float m_dist = m_delta.norm();
-                if (m_dist == 0.f) continue;
+
+                if (m_dist == 0.f)
+                    continue;
+
                 float angle = m_dist * 2 * M_PIf/w;
                 Vec3 m_dir = m_delta.normalized();
 

@@ -10,12 +10,18 @@ struct Color32
         uint32_t bits;
         struct { uint8_t b, g, r, a; };
     };
+
     Color32() = default;
     Color32(uint32_t bits) : bits(bits) { }
+
     Color32(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : b(b), g(g), r(r), a(a) { }
+
     Color32(Vec3Int i) : b(i.b), g(i.g), r(i.r), a(0xff) { }
+
     Color32(Vec3 f) : b(std::round(f.b)), g(std::round(f.b)), r(std::round(f.r)), a(0xff) { }
+
     operator uint32_t() const { return bits; }
+
     Vec3Int vec() const { return Vec3Int(r, g, b); }
     Vec3 vecf() const { return Vec3(r, g, b); }
     Vec3 norm() const { return Vec3(r, g, b).scale(1.f / 255); }
@@ -47,6 +53,7 @@ struct Frag
     Vec3 bc_clip;
     Vec3 bc_screen;
     std::array<Vert, 3> v;
+
     explicit Frag(ScreenPoint &pix, Color32 color, Vec3 bc_clip, Vec3 bc_screen, std::array<Vert, 3> vs) :
         pix(pix),
         color(color),
@@ -54,6 +61,7 @@ struct Frag
         bc_screen(bc_screen),
         v(vs) {
     }
+
 };
 
 struct ScreenLine

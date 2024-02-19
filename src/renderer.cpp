@@ -37,7 +37,7 @@ RenderContext::~RenderContext()
     delete[] frag_locks;
 }
 
-void RenderContext::sta_fr()
+void RenderContext::start_frame()
 {
     std::fill(z_buff, z_buff + w * h, -clipping_plane);
     std::fill(f_buff, f_buff + w * h, backgr_color);
