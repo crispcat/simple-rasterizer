@@ -168,7 +168,7 @@ inline Vec3 barycentric(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint
     Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, p.x - a.x),
                        Vec3Int(b.y - a.y, c.y - a.y, p.y - a.y));
     if (uv.z == 0)
-        return {-1, 1, 1};
+        return { -1, 1, 1 };
 
     // norm is actually flipped
     return { 1.f - (float)(uv.x + uv.y) / -uv.z, (float)uv.x / -uv.z, (float)uv.y / -uv.z };
@@ -187,21 +187,16 @@ struct Matrix
 
     Matrix() : el { 0 } { }
 
-    explicit Matrix(T arr[SIZE])
+    Matrix(const T (&arr)[SIZE])
     {
         std::copy(arr, arr + SIZE, el);
-    }
-
-    Matrix(std::initializer_list<T> il) : el { 0 }
-    {
-        std::move(il.begin(), il.end(), el);
     }
 
     explicit Matrix(Vector3<T> vec) : Matrix({ vec.x, vec.y, vec.z, 1.f }) { }
 
     Vector3<T> proj3d()
     {
-        static_assert(ROWS == 4 && COLS == 1, "only homogeneous matrix 4 x 1 can be projected back to 3d");
+        static_assert(ROWS == 4 && COLS == 1, "only homogeneous matrix 4 x 1 can be projected back in 3d");
         return { x / t, y / t, z / t };
     }
 
@@ -269,10 +264,12 @@ inline Transform translate(Vec3 delta)
     float &x = delta.x;
     float &y = delta.y;
     float &z = delta.z;
-    return { 1, 0, 0, x,
-             0, 1, 0, y,
-             0, 0, 1, z,
-             0, 0, 0, 1 };
+    return {{
+        1, 0, 0, x,
+        0, 1, 0, y,
+        0, 0, 1, z,
+        0, 0, 0, 1
+    }};
 }
 
 inline Transform scale(Vec3 scale)
@@ -280,10 +277,12 @@ inline Transform scale(Vec3 scale)
     float &x = scale.x;
     float &y = scale.y;
     float &z = scale.z;
-    return { x, 0, 0, 0,
-             0, y, 0, 0,
-             0, 0, z, 0,
-             0, 0, 0, 1 };
+    return {{
+        x, 0, 0, 0,
+        0, y, 0, 0,
+        0, 0, z, 0,
+        0, 0, 0, 1
+    }};
 }
 
 inline Transform rotate(Vec3 axis, float angle)
@@ -292,19 +291,23 @@ inline Transform rotate(Vec3 axis, float angle)
     float s = sin(angle);
     float _1_c = 1 - c;
     Vec3 &a = axis;
-    return { (c + a.x * a.x * _1_c), (a.x * a.y * _1_c - a.z * s), (a.x * a.z * _1_c + a.y * s), 0,
-             (a.y * a.x * _1_c + a.z * s), (c + a.y * a.y * _1_c), (a.y * a.z * _1_c - a.x * s), 0,
-             (a.z * a.x * _1_c - a.y * s), (a.z * a.y * _1_c + a.x * s), (c + a.z * a.z * _1_c), 0,
-             0, 0, 0, 1 };
+    return {{
+        (c + a.x * a.x * _1_c),        (a.x * a.y * _1_c - a.z * s),  (a.x * a.z * _1_c + a.y * s),  0,
+        (a.y * a.x * _1_c + a.z * s),  (c + a.y * a.y * _1_c),        (a.y * a.z * _1_c - a.x * s),  0,
+        (a.z * a.x * _1_c - a.y * s),  (a.z * a.y * _1_c + a.x * s),  (c + a.z * a.z * _1_c),        0,
+         0,                             0,                             0,                            1
+    }};
 }
 
 inline Transform perspective(float c_dist)
 {
     float c = -1.f / c_dist;
-    return { 1,   0,   0,   0,
-             0,  -1,   0,   0,
-             0,   0,   1,   0,
-             0,   0,   c,   1 };
+    return {{
+        1,   0,   0,   0,
+        0,  -1,   0,   0,
+        0,   0,   1,   0,
+        0,   0,   c,   1
+    }};
 }
 
 template <class T>

@@ -37,10 +37,12 @@ void RenderContext::set_cam(Vec3 eye, Vec3 center, Vec3 up)
 void RenderContext::set_viewport(float w, float h)
 {
     static const float d = 255.f; // depth
-    viewport = { w/2, 0,   0,   w/2,
-                 0,   h/2, 0,   h/2,
-                 0,   0,   d/2, d/2,
-                 0,   0,   0,   1 };
+    viewport = {{
+        w/2,  0,    0,    w/2,
+        0,    h/2,  0,    h/2,
+        0,    0,    d/2,  d/2,
+        0,    0,    0,    1
+    }};
 }
 
 void RenderContext::vert(Vert &v) const

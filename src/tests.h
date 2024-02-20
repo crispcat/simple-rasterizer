@@ -110,14 +110,18 @@ void calc_vectors()
 
 void calc_matrices()
 {
-    Matrix<2, 5, float> m1 { 3,    7,  -2,   12,  4,
-                             3.4f, 1.f, 0.f, 5.f, 33 };
+    Matrix<2, 5, float> m1 {{
+        3,    7,  -2,   12,  4,
+        3.4f, 1.f, 0.f, 5.f, 33
+    }};
 
-    Matrix<5, 2, float> m2 { 3, 3,
-                             0, 0,
-                             5, 5,
-                             4, 4,
-                             2, 1 };
+    Matrix<5, 2, float> m2 {{
+        3, 3,
+        0, 0,
+        5, 5,
+        4, 4,
+        2, 1
+    }};
 
     std::cout << "m1:" << '\n' << m1 << '\n' << '\n';
     std::cout << "m2:" << '\n' << m2 << '\n' << '\n';
@@ -125,18 +129,22 @@ void calc_matrices()
     auto m3 = m1 * m2;
     std::cout << "m3:" << '\n' << m3 << '\n' << '\n';
 
-    float m4d[10] = { 3,    7,  -2,   12,  4,
-                      3.4f, 1.f, 0.f, 5.f, 33 };
+    float m4d[10] = {
+        3,    7,  -2,   12,  4,
+        3.4f, 1.f, 0.f, 5.f, 33
+    };
 
-    Matrix<5, 2, float>m4(m4d);
+    Matrix<5, 2, float>m4 { m4d };
     std::cout << "m4:" << '\n' << m4 << '\n' << '\n';
 
-    Matrix<5, 2, float>m5 { 3,    7,  -2,   12,  4,
-                            3.4f, 1.f, 0.f, 5.f, 33,
-                            0,    0,   0,   0,   0};
+    Matrix<5, 2, float>m5 {{
+        3,    7,  -2,   12,  4,
+        3.4f, 1.f, 0.f, 5.f, 33,
+    }};
+
     std::cout << "m5:" << '\n' << m5 << '\n';
 
-    Matrix<5, 2, float>m6 { 3, 7, -2, 12, 4 };
+    Matrix<5, 2, float>m6 {{ 3, 7, -2, 12, 4 }};
     std::cout << "m6:" << '\n' << m6 << '\n';
 }
 
