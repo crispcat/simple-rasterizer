@@ -151,8 +151,8 @@ Vector3<T> cross(Vector3<T> a, Vector3<T> b)
 //  barycentric coordinates is linear combination of the face vectors with weights
 //  representing a point inside a polygon.
 //
-//  P = (1 - u - v) * Args_ + u*B + v*C
-//  P = Args_ + u*AB + v*AC
+//  P = (1 - u - v) * A + u*B + v*C
+//  P = A + u*AB + v*AC
 //  u*AB + v*AC + PA = 0
 //
 //  { u * AB(x) + v * AC(x) + PA(x) = 0;
@@ -162,16 +162,14 @@ Vector3<T> cross(Vector3<T> a, Vector3<T> b)
 //  { (u, v, 1) dot (AB(y), AC(y), PA(y)) = 0;
 //
 //  (u, v, 1) = (AB(x), AC(x), PA(x)) cross (AB(y), AC(y), PA(y))
-//
+//  TODO: make template
 inline Vec3 barycentric(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint c)
 {
-    Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, p.x - a.x),
-                       Vec3Int(b.y - a.y, c.y - a.y, p.y - a.y));
+    Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, a.x - p.x),
+                       Vec3Int(b.y - a.y, c.y - a.y, a.y - p.y));
     if (uv.z == 0)
         return { -1, 1, 1 };
-
-    // norm is actually flipped
-    return { 1.f - (float)(uv.x + uv.y) / -uv.z, (float)uv.x / -uv.z, (float)uv.y / -uv.z };
+    return { 1.f - (float)(uv.x + uv.y) / uv.z, (float)uv.x / uv.z, (float)uv.y / uv.z };
 }
 
 template <size_t ROWS, size_t COLS, typename T>

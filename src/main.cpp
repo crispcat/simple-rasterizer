@@ -76,6 +76,7 @@ int main(int argc, char **argv)
     {
         calc_vectors();
         calc_matrices();
+        calc_products();
 
         TgaImage image1(100, 100, TgaImage::Format::RGBA);
         TgaImage image2(200, 200, TgaImage::Format::RGBA);
