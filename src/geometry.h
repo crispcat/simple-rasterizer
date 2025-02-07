@@ -162,16 +162,14 @@ Vector3<T> cross(Vector3<T> a, Vector3<T> b)
 //  { (u, v, 1) * (AB(y), AC(y), PA(y)) = 0;
 //
 //  (u, v, 1) = (AB(x), AC(x), PA(x)) cross (AB(y), AC(y), PA(y))
-//
+//  TODO: make template
 inline Vec3 barycentric(ScreenPoint p, ScreenPoint a, ScreenPoint b, ScreenPoint c)
 {
-    Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, p.x - a.x),
-                       Vec3Int(b.y - a.y, c.y - a.y, p.y - a.y));
+    Vec3Int uv = cross(Vec3Int(b.x - a.x, c.x - a.x, a.x - p.x),
+                       Vec3Int(b.y - a.y, c.y - a.y, a.y - p.y));
     if (uv.z == 0)
         return { -1, 1, 1 };
-
-    // norm is actually flipped
-    return { 1.f - (float)(uv.x + uv.y) / -uv.z, (float)uv.x / -uv.z, (float)uv.y / -uv.z };
+    return { 1.f - (float)(uv.x + uv.y) / uv.z, (float)uv.x / uv.z, (float)uv.y / uv.z };
 }
 
 template <size_t ROWS, size_t COLS, typename T>
