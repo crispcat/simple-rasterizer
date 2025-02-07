@@ -101,8 +101,4 @@ void set_model(RenderContext &c, const ObjModel &m)
     c.normals = m.normals;
     c.faces = m.faces;
     c.uvs = m.uvs;
-//    foregr_color.foregr_color = COLOR_GREEN;
-//    foregr_color.gizmo_triangles();
-//    foregr_color.foregr_color = COLOR_RED;
-//    foregr_color.gizmo_points();
 }
