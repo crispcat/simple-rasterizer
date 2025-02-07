@@ -67,7 +67,7 @@ void RenderContext::triangle(std::array<Vert, 3>  v)
     for (int32_t y = y0; y <= y1; y++)
     {
         ScreenPoint pix(x, y);
-        Vec3 bc_screen = barycentric(pix, v[0].screen, v[1].screen, v[2].screen);
+        Vec3 bc_screen = barycentric2(pix, v[0].screen, v[1].screen, v[2].screen);
         if (bc_screen[0] < 0 || bc_screen[1] < 0 || bc_screen[2] < 0)
             continue;
 

@@ -41,7 +41,7 @@ struct Vert
     Vec2 tex;
     Hom  clip   {};
     Hom  viewport  {};
-    Vec3 screen {};
+    ScreenPoint screen {};
     Vert(Vec3 pos, Vec3 norm, Vec2 uv) : pos(pos), norm(norm), tex(uv) { }
 };
 
