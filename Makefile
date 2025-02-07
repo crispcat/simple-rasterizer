@@ -22,13 +22,15 @@ all: release debug
 
 .depend_release:
 	$(COMPILER) $(CXXFLAGS) -MM $(wildcard $(SRC)) > .depend_release
-	awk -i inplace '{ORS = /\\/? "": RS; sub(/\\$$/, ""); print}' .depend_release
-	sed -i -e "s/^/obj\/release\//" .depend_release
+	awk '{ ORS = (/\\$$/ ? "" : RS); sub(/\\$$/, ""); print }' .depend_release > .tmp_release && mv .tmp_release .depend_release
+	awk '{gsub(/  +/," "); sub(/^ /,""); sub(/ $$/,"")}1' .depend_release > .tmp_release && mv .tmp_release .depend_release
+	awk '{print "obj/release/" $$0}' .depend_release > .tmp_release && mv .tmp_release .depend_release
 
 .depend_debug:
 	$(COMPILER) $(CXXFLAGS) -MM $(wildcard $(SRC)) > .depend_debug
-	awk -i inplace '{ORS = /\\/? "": RS; sub(/\\$$/, ""); print}' .depend_debug
-	sed -i -e "s/^/obj\/debug\//" .depend_debug
+	awk '{ ORS = (/\\$$/ ? "" : RS); sub(/\\$$/, ""); print }' .depend_debug > .tmp_debug && mv .tmp_debug .depend_debug
+	awk '{gsub(/  +/," "); sub(/^ /,""); sub(/ $$/,"")}1' .depend_debug > .tmp_debug && mv .tmp_debug .depend_debug
+	awk '{print "obj/debug/" $$0}' .depend_debug > .tmp_debug && mv .tmp_debug .depend_debug
 
 include .depend_release
 include .depend_debug

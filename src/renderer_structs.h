@@ -40,7 +40,7 @@ struct Vert
     Vec3 norm;
     Vec2 tex;
     Hom  clip   {};
-    Hom  vport  {};
+    Hom  viewport  {};
     Vec3 screen {};
     Vert(Vec3 pos, Vec3 norm, Vec2 uv) : pos(pos), norm(norm), tex(uv) { }
 };
@@ -54,7 +54,7 @@ struct Frag
     Vec3 bc_screen;
     std::array<Vert, 3> v;
 
-    explicit Frag(ScreenPoint &pix, Color32 color, Vec3 bc_clip, Vec3 bc_screen, std::array<Vert, 3> vs) :
+    Frag(ScreenPoint &pix, Color32 color, Vec3 bc_clip, Vec3 bc_screen, std::array<Vert, 3> vs) :
         pix(pix),
         color(color),
         bc_clip(bc_clip),

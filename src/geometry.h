@@ -151,15 +151,15 @@ Vector3<T> cross(Vector3<T> a, Vector3<T> b)
 //  barycentric coordinates is linear combination of the face vectors with weights
 //  representing a point inside a polygon.
 //
-//  P = (1 - u - v) * Args_ + u*B + v*C
-//  P = Args_ + u*AB + v*AC
+//  P = (1 - u - v) * A + u*B + v*C
+//  P = A + u*AB + v*AC
 //  u*AB + v*AC + PA = 0
 //
 //  { u * AB(x) + v * AC(x) + PA(x) = 0;
 //  { u * AB(y) + v * AC(y) + PA(y) = 0;
 //
-//  { (u, v, 1) dot (AB(x), AC(x), PA(x)) = 0;
-//  { (u, v, 1) dot (AB(y), AC(y), PA(y)) = 0;
+//  { (u, v, 1) * (AB(x), AC(x), PA(x)) = 0;
+//  { (u, v, 1) * (AB(y), AC(y), PA(y)) = 0;
 //
 //  (u, v, 1) = (AB(x), AC(x), PA(x)) cross (AB(y), AC(y), PA(y))
 //
@@ -190,6 +190,11 @@ struct Matrix
     Matrix(const T (&arr)[SIZE])
     {
         std::copy(arr, arr + SIZE, el);
+    }
+
+    Matrix(const T (&&arr)[SIZE])
+    {
+        std::move(arr, arr + SIZE, el);
     }
 
     explicit Matrix(Vector3<T> vec) : Matrix({ vec.x, vec.y, vec.z, 1.f }) { }

@@ -40,7 +40,7 @@ public:
 
 public:
     void drawcall();
-    void triangle(std::array<Vert, 3>  vs);
+    void triangle(std::array<Vert, 3>  v);
 
 protected:
     void apply_texture(Frag &f) const;

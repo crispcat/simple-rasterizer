@@ -48,36 +48,33 @@ void RenderContext::set_viewport(float w, float h)
 void RenderContext::vert(Vert &v) const
 {
     v.clip = proj * view * Hom(v.pos);
-    v.vport = viewport * v.clip;
-    v.screen = v.vport.proj3d();
+    v.viewport = viewport * v.clip;
+    v.screen = v.viewport.proj3d();
 }
 
-void RenderContext::triangle(std::array<Vert, 3>  vs)
+void RenderContext::triangle(std::array<Vert, 3>  v)
 {
-    vert(vs[0]);
-    vert(vs[1]);
-    vert(vs[2]);
+    vert(v[0]);
+    vert(v[1]);
+    vert(v[2]);
 
-    Hom vport[3] = { vs[0].vport, vs[1].vport, vs[2].vport };
-    Vec3 screen[3] = { vs[0].screen, vs[1].screen, vs[2].screen };
-
-    int32_t x0 = std::min(screen[0].x, std::min(screen[1].x, screen[2].x)); // NOLINT(cppcoreguidelines-narrowing-conversions)
-    int32_t x1 = std::max(screen[0].x, std::max(screen[1].x, screen[2].x)); // NOLINT(cppcoreguidelines-narrowing-conversions)
-    int32_t y0 = std::min(screen[0].y, std::min(screen[1].y, screen[2].y)); // NOLINT(cppcoreguidelines-narrowing-conversions)
-    int32_t y1 = std::max(screen[0].y, std::max(screen[1].y, screen[2].y)); // NOLINT(cppcoreguidelines-narrowing-
+    int32_t x0 = std::min(v[0].screen.x, std::min(v[1].screen.x, v[2].screen.x)); // NOLINT(cppcoreguidelines-narrowing-conversions)
+    int32_t x1 = std::max(v[0].screen.x, std::max(v[1].screen.x, v[2].screen.x)); // NOLINT(cppcoreguidelines-narrowing-conversions)
+    int32_t y0 = std::min(v[0].screen.y, std::min(v[1].screen.y, v[2].screen.y)); // NOLINT(cppcoreguidelines-narrowing-conversions)
+    int32_t y1 = std::max(v[0].screen.y, std::max(v[1].screen.y, v[2].screen.y)); // NOLINT(cppcoreguidelines-narrowing-conversions)
 
     for (int32_t x = x0; x <= x1; x++)
     for (int32_t y = y0; y <= y1; y++)
     {
         ScreenPoint pix(x, y);
-        Vec3 bc_screen = barycentric(pix, screen[0], screen[1], screen[2]);
-        if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0)
+        Vec3 bc_screen = barycentric(pix, v[0].screen, v[1].screen, v[2].screen);
+        if (bc_screen[0] < 0 || bc_screen[1] < 0 || bc_screen[2] < 0)
             continue;
 
-        Vec3 bc_clip = { bc_screen.x / *vport[0][3], bc_screen.y / *vport[1][3], bc_screen.z / *vport[2][3] };
+        Vec3 bc_clip = { bc_screen[0] / v[0].viewport.t, bc_screen[1] / v[1].viewport.t, bc_screen[2] / v[2].viewport.t };
         bc_clip = bc_clip.scale(1.f / (bc_clip.x + bc_clip.y + bc_clip.z));
 
-        Frag f(pix, foregr_color, bc_clip, bc_screen, vs);
+        Frag f(pix, foregr_color, bc_clip, bc_screen, v);
         frag(f);
     }
 }

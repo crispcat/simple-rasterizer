@@ -4,7 +4,6 @@
 #include "fenster.h"
 #include "renderer.h"
 #include "objmodel.h"
-#include "fpsmon.h"
 
 void set_model(RenderContext &c, const ObjModel &m);
 
@@ -80,7 +79,7 @@ int main(int argc, char **argv)
         TgaImage image1(100, 100, TgaImage::Format::RGBA);
         TgaImage image2(200, 200, TgaImage::Format::RGBA);
 
-        RenderContext context((uint32_t*)image1.buffer(), 100, 100);
+        RenderContext context((uint32_t*) image1.buffer(), 100, 100);
         draw_primitives_lines(context);
         image1.write_tga_file("lines.tga");
         std::cout << "Lines test rendered to lines.tga" << std::endl;
