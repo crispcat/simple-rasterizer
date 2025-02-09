@@ -148,10 +148,4 @@ void calc_matrices()
     std::cout << "m6:" << '\n' << m6 << '\n';
 }
 
-void calc_products() {
-    Vec3 a {0.66f, 1.3f, 2.f};
-    Vec3 b {0.3f, .6f, 2.f};
-    std::cout << cross(a, b) << '\n';
-}
-
 #endif //SIMPLE_RASTERIZER_TESTS_H

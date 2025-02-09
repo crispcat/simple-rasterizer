@@ -3,6 +3,9 @@
 
 #include <array>
 
+using DepthBufferValue = std::uint8_t;
+static constexpr DepthBufferValue DEPTH_BUFFER_RESOLUTION = std::numeric_limits<DepthBufferValue>::max();
+
 struct Color32
 {
     union
@@ -50,15 +53,13 @@ struct Frag
 {
     ScreenPoint pix;
     Color32 color;
-    Vec3 bc_clip;
-    Vec3 bc_screen;
+    Vec3 bc_viewport;
     std::array<Vert, 3> v;
 
-    Frag(ScreenPoint &pix, Color32 color, Vec3 bc_clip, Vec3 bc_screen, std::array<Vert, 3> vs) :
+    Frag(ScreenPoint pix, Vec3 barycentric, std::array<Vert, 3> vs) :
         pix(pix),
-        color(color),
-        bc_clip(bc_clip),
-        bc_screen(bc_screen),
+        color(COLOR_WHITE),
+        bc_viewport(barycentric),
         v(vs) {
     }
 

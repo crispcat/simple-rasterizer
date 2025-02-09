@@ -18,7 +18,7 @@ void RenderContext::set_buff(uint32_t *frame_buff, uint16_t width, uint16_t heig
     w = width;
     h = height;
     f_buff = frame_buff;
-    delete[] z_buff; z_buff = new float[w * h];
+    delete[] z_buff; z_buff = new DepthBufferValue[w * h];
     delete[] frag_locks; frag_locks = new std::atomic_flag[w * h];
     for (uint32_t i = 0; i < w * h; i++) frag_locks[i].clear();
     set_cam({ 0.f, 0.f, 1.f }, Vec3::zero(), Vec3::up());
@@ -39,8 +39,8 @@ RenderContext::~RenderContext()
 
 void RenderContext::start_frame()
 {
-    std::fill(z_buff, z_buff + w * h, -clipping_plane);
-    std::fill(f_buff, f_buff + w * h, backgr_color);
+    std::fill(z_buff, z_buff + w * h, 0);
+    std::fill(f_buff, f_buff + w * h, COLOR_BLACK);
 }
 
 void RenderContext::pixel(uint16_t x, uint16_t y, Color32 c)

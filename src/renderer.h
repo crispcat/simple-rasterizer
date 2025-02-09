@@ -2,7 +2,6 @@
 #define SIMPLE_RASTERIZER_RENDERER_H
 
 #include <vector>
-#include <memory>
 #include "geometry.h"
 #include "tgaimage.h"
 #include "thread_pool.h"
@@ -17,7 +16,6 @@ public:
     std::vector<Vec3> normals{};
     std::vector<Vec3Int> faces{};
     Vec3 light_dir = Vec3::back();
-    float clipping_plane = 255.f;   // far
 
 public:
     Color32 foregr_color = COLOR_WHITE;
@@ -29,7 +27,7 @@ public:
     void set_tex(const TgaImage &t);
     void set_buff(uint32_t *frame_buff, uint16_t width, uint16_t height);
     void set_cam(Vec3 eye, Vec3 center, Vec3 up);
-    void set_viewport(float w, float h);
+    void set_viewport(uint32_t width, uint32_t height);
     void start_frame();
     void render() { start_frame(); drawcall(); }
 
@@ -53,7 +51,7 @@ protected:
     uint16_t h;
     TgaImage tex;
     Vec2 tex_scale;
-    float *z_buff;
+    DepthBufferValue *z_buff;
     uint32_t *f_buff;
     std::atomic_flag *frag_locks;
     BS::thread_pool_light t_pool;

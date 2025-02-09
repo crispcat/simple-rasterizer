@@ -140,8 +140,8 @@ T dot(Vector3<T> a, Vector3<T> b)
 //  a.y * b.z - a.z * b.y = x
 //  a.z * b.x - a.x * b.z = y
 //  a.x * b.y - a.y * b.x = z
-template<typename T, typename V>
-Vector3<V> cross(Vector3<T> a, Vector3<T> b)
+template<typename T>
+Vector3<T> cross(Vector3<T> a, Vector3<T> b)
 {
     return { a.y * b.z - a.z * b.y,
              a.z * b.x - a.x * b.z,
@@ -162,19 +162,14 @@ Vector3<V> cross(Vector3<T> a, Vector3<T> b)
 //  { (u, v, 1) * (AB(y), AC(y), PA(y)) = 0;
 //
 //  (u, v, 1) = (AB(x), AC(x), PA(x)) cross (AB(y), AC(y), PA(y))
-template<typename T>
-Vec3 barycentric2(Vector2<T> p, Vector2<T> a, Vector2<T> b, Vector2<T> c)
+inline Vec3 barycentric2(Vec2 p, Vec2 a, Vec2 b, Vec2 c)
 {
-    static_assert(std::is_convertible_v<T, float>, "point coordinates must be convertible to float");
-
-    Vector3<T> uv = cross(Vector3<T>(b.x - a.x, c.x - a.x, a.x - p.x),
-                          Vector3<T>(b.y - a.y, c.y - a.y, a.y - p.y));
+    Vec3 uv = cross(Vec3(b.x - a.x, c.x - a.x, a.x - p.x),
+                    Vec3(b.y - a.y, c.y - a.y, a.y - p.y));
     if (uv.z == 0)
         return { -1.f, 1.f, 1.f };
 
-    return { 1.f - static_cast<float>(uv.x + uv.y) / uv.z,
-             static_cast<float>(uv.x) / uv.z,
-             static_cast<float>(uv.y) / uv.z };
+    return { 1.f - (uv.x + uv.y) / uv.z, uv.x / uv.z, uv.y / uv.z };
 }
 
 template <size_t ROWS, size_t COLS, typename T>
