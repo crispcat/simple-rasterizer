@@ -3,6 +3,7 @@ unify numeric types
 remove 2d logic
 remove tests
 render floor (multiobject scene, world coordinates)
+non-freak build system
 
 complete all shaders
 proper camera rotation and moving logic
