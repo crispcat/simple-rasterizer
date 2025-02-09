@@ -21,7 +21,7 @@ struct Color32
 
     Color32(Vec3Int i) : b(i.b), g(i.g), r(i.r), a(0xff) { }
 
-    Color32(Vec3 f) : b(std::round(f.b)), g(std::round(f.b)), r(std::round(f.r)), a(0xff) { }
+    Color32(Vec3 f) : b(std::round(f.b)), g(std::round(f.g)), r(std::round(f.r)), a(0xff) { }
 
     operator uint32_t() const { return bits; }
 

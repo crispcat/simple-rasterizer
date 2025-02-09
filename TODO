@@ -1,0 +1,11 @@
+rewrite geometry class
+unify numeric types
+remove 2d logic
+remove tests
+render floor (multiobject scene, world coordinates)
+
+complete all shaders
+proper camera rotation and moving logic
+add imgui
+
+implement additional renderers: CUDA?, OpenGL?, Vulkan?
