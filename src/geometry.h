@@ -7,6 +7,7 @@
 
 template<typename T> struct Vector2;
 template<typename T> struct Vector3;
+template<typename T> struct Vector4;
 template<size_t N, size_t M, class T> struct Matrix;
 
 template<typename T>
@@ -22,37 +23,27 @@ struct Vector2
     Vector2() : x(), y() { }
     Vector2(T x, T y) : x(x), y(y) { }
     explicit Vector2(T raw[2]) : raw(raw) { }
-
     T operator[](size_t i) { return raw[i]; }
 
-    Vector2<T> operator + (Vector2<T> v) const { return Vector2<T>(x + v.x, y + v.y); }
-    Vector2<T> operator - (Vector2<T> v) const { return Vector2<T>(x - v.x, y - v.y); }
-
+    Vector2<T> operator - () const { return { -x, -y }; }
+    Vector2<T> operator + (Vector2<T> v) const { return { x + v.x, y + v.y }; }
+    Vector2<T> operator - (Vector2<T> v) const { return { x - v.x, y - v.y }; }
     void operator += (Vector2<T> v) { x += v.x; y += v.y; }
     void operator -= (Vector2<T> v) { x -= v.x; y -= v.y; }
+    Vector2<T> operator * (T s) const { return { x * s, y * s }; }
+    Vector2<T> operator / (T s) const { return { x / s, y / s }; }
 
-    Vector2<T> operator - () const { return Vector2<T>(-x, -y); }
-
-    Vector2<T> scale(T s) const { return Vector2<T>(x * s, y * s); }
-    Vector2<T> scale(T sx, T sy) const { return Vector2<T>(x * sx, y * sy); }
-    Vector2<T> scale(Vector2<T> s) const { return Vector2<T>(x * s.x, y * s.y); }
-
-    float_t norm() const { return std::sqrt(sqnorm()); }
     T sqnorm() const { return x * x + y * y; }
-    Vector2<float> normalized() const { auto n = norm(); return Vector2<float>(x / n, y / n); }
+    float_t norm() const { return std::sqrt(sqnorm()); }
+    Vector2<float> normalized() const { auto n = norm(); return { x / n, y / n }; }
 
-    operator Vector3<T>() { return Vector3<T>(x, y); }
-    Vector2<T> apply(T (*a)(T)) { return Vector2<T>(a(x), a(y)); }
+    Vector2<T> apply(T (*a)(T)) { return { a(x), a(y) }; }
 
-    template<typename V>
-    operator Vector2<V>() { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
-    template<typename V>
-    operator Vector3<V>() { return Vector3<V>(static_cast<V>(x), static_cast<V>(y), T{}); }
+    template<typename V> operator Vector2<V>() { return { static_cast<V>(x), static_cast<V>(y) }; }
+    template<typename V> operator Vector3<V>() { return { static_cast<V>(x), static_cast<V>(y), T{} }; }
 
-    template<typename>
-    friend std::ostream& operator << (std::ostream &s, Vector2<T> v);
-    template<typename>
-    friend std::istream& operator >> (std::istream &s, Vector2<T> &v);
+    template<typename> friend std::ostream& operator << (std::ostream &s, Vector2<T> v);
+    template<typename> friend std::istream& operator >> (std::istream &s, Vector2<T> &v);
 
     static constexpr Vector2<T> zero () { return { }; }
     static constexpr Vector2<T> one  () { return { 1, 1 }; }
@@ -72,38 +63,27 @@ struct Vector3
     Vector3() : x(), y(), z() { }
     Vector3(T x, T y, T z) : x(x), y(y), z(z) { }
     explicit Vector3(T raw[3]) : raw(raw) { }
-
     T operator[](size_t i) { return raw[i]; }
 
-    Vector3<T> operator - () const { return Vector3<T>(-x, -y, -z); }
-    Vector3<T> operator + (const Vector3<T> v) const { return Vector3<T>(x + v.x, y + v.y, z + v.z); }
-    Vector3<T> operator - (const Vector3<T> v) const { return Vector3<T>(x - v.x, y - v.y, z - v.z); }
-
+    Vector3<T> operator - () const { return { -x, -y, -z }; }
+    Vector3<T> operator + (const Vector3<T> v) const { return { x + v.x, y + v.y, z + v.z }; }
+    Vector3<T> operator - (const Vector3<T> v) const { return { x - v.x, y - v.y, z - v.z }; }
     void operator += (Vector3<T> v) { x += v.x; y += v.y; z += v.z; }
     void operator -= (Vector3<T> v) { x -= v.x; y -= v.y; z -= v.z; }
+    Vector3<T> operator * (T s) const { return { x * s, y * s, z * s }; }
+    Vector3<T> operator / (T s) const { return { x / s, y / s, z / s }; }
 
-    Vector3<T> scale(Vector3<T> s) const { return Vector3<T>(x * s.x, y * s.y, z * s.z); }
-    Vector3<T> scale(T s) { return Vector3<T>(x * s, y * s, z * s); }
-    Vector3<T> scale(T sx, T sy, T sz) const { return Vector3<T>(x * sx, y * sy, z * sz); }
-
-    float_t norm() const { return std::sqrt(sqnorm()); }
     T sqnorm() const { return x * x + y * y + z * z; }
-    Vector3<float> normalized() const { auto n = norm(); return Vector3<float>(x / n, y / n, z / n); }
+    float_t norm() const { return std::sqrt(sqnorm()); }
+    Vector3<float> normalized() const { auto n = norm(); return { x / n, y / n, z / n }; }
 
-    operator Vector2<T>() const { return Vector2<T>(x, y); }
-    Vector3<T> apply(T (*f)(T)) const { return Vector3<T>(f(x), f(y), f(z)); }
-    Vector3<T> apply(T (*fx)(T), T (*fy)(T)) const { return Vector3<T>(fx(x), fy(y), z); }
-    Vector3<T> apply(T (*fx)(T), T (*fy)(T), T (*fz)(T)) const { return Vector3<T>(fx(x), fy(y), fz(z)); }
+    Vector3<T> apply(T (*f)(T)) const { return { f(x), f(y), f(z) }; }
 
-    template<typename V>
-    operator Vector3<V>() const { return Vector3<V>(static_cast<V>(x), static_cast<V>(y), static_cast<V>(z)); }
-    template<typename V>
-    operator Vector2<V>() const { return Vector2<V>(static_cast<V>(x), static_cast<V>(y)); }
+    template<typename V> operator Vector2<V>() const { return { static_cast<V>(x), static_cast<V>(y) }; }
+    template<typename V> operator Vector3<V>() const { return { static_cast<V>(x), static_cast<V>(y), static_cast<V>(z) }; }
 
-    template<typename>
-    friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
-    template<typename>
-    friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
+    template<typename> friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
+    template<typename> friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
 
     static constexpr Vector3<T> zero    () { return { }; }
     static constexpr Vector3<T> one     () { return { 1, 1, 1 }; }
@@ -115,62 +95,47 @@ struct Vector3
     static constexpr Vector3<T> back    () { return {  0,  0, -1 }; }
 };
 
-using Vec2 = Vector2<float>;
-using Vec3 = Vector3<float>;
-using Vec2Int = Vector2<int32_t>;
-using Vec3Int = Vector3<int32_t>;
-using ScreenPoint = Vector2<uint16_t>;
-
 template<typename T>
-T dot(Vector2<T> a, Vector2<T> b)
+struct Vector4
 {
-    return a.x * b.x + a.y * b.y;
-}
+    union
+    {
+        struct { T x, y, z, t; };
+        T raw[4];
+    };
 
-template<typename T>
-T dot(Vector3<T> a, Vector3<T> b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
+    Vector4() : x(), y(), z(), t() { }
+    Vector4(T x, T y, T z, T t) : x(x), y(y), z(z), t(t) { }
+    explicit Vector4(T raw[4]) : raw(raw) { }
 
-//  x  y  z
-//  ax ay az
-//  bx by bz
-//
-//  a.y * b.z - a.z * b.y = x
-//  a.z * b.x - a.x * b.z = y
-//  a.x * b.y - a.y * b.x = z
-template<typename T>
-Vector3<T> cross(Vector3<T> a, Vector3<T> b)
-{
-    return { a.y * b.z - a.z * b.y,
-             a.z * b.x - a.x * b.z,
-             a.x * b.y - a.y * b.x };
-}
+    T operator[](size_t i) { return raw[i]; }
 
-//  barycentric coordinates is linear combination of the face vectors with weights
-//  representing a point inside a polygon.
-//
-//  P = (1 - u - v) * A + u*B + v*C
-//  P = A + u*AB + v*AC
-//  u*AB + v*AC + PA = 0
-//
-//  { u * AB(x) + v * AC(x) + PA(x) = 0;
-//  { u * AB(y) + v * AC(y) + PA(y) = 0;
-//
-//  { (u, v, 1) * (AB(x), AC(x), PA(x)) = 0;
-//  { (u, v, 1) * (AB(y), AC(y), PA(y)) = 0;
-//
-//  (u, v, 1) = (AB(x), AC(x), PA(x)) cross (AB(y), AC(y), PA(y))
-inline Vec3 barycentric2(Vec2 p, Vec2 a, Vec2 b, Vec2 c)
-{
-    Vec3 uv = cross(Vec3(b.x - a.x, c.x - a.x, a.x - p.x),
-                    Vec3(b.y - a.y, c.y - a.y, a.y - p.y));
-    if (uv.z == 0)
-        return { -1.f, 1.f, 1.f };
+    Vector4<T> operator - () const { return { -x, -y, -z, -t }; }
+    Vector4<T> operator + (const Vector4<T> v) const { return { x + v.x, y + v.y, z + v.z, t + v.t }; }
+    Vector4<T> operator - (const Vector4<T> v) const { return { x - v.x, y - v.y, z - v.z, t - v.t }; }
+    void operator += (Vector4<T> v) { x += v.x; y += v.y; z += v.z; t += v.t; }
+    void operator -= (Vector4<T> v) { x -= v.x; y -= v.y; z -= v.z; t -= v.t; }
+    Vector4 operator * (T s) const { return { x * s, y * s, z * s, t * s }; }
+    Vector4 operator / (T s) const { return { x / s, y / s, z / s, t / s }; }
 
-    return { 1.f - (uv.x + uv.y) / uv.z, uv.x / uv.z, uv.y / uv.z };
-}
+    T sqnorm() const { return x * x + y * y + z * z + t * t; }
+    float_t norm() const { return std::sqrt(sqnorm()); }
+    Vector4<float> normalized() const { auto n = norm(); return { x / n, y / n, z / n, t / n }; }
+
+    Vector4<T> apply(T (*f)(T)) const { return { f(x), f(y), f(z), f(t) }; }
+
+    template<typename V>
+    operator Vector2<V>() const { return { static_cast<V>(x), static_cast<V>(y) }; }
+    template<typename V>
+    operator Vector3<V>() const { return { static_cast<V>(x), static_cast<V>(y), static_cast<V>(z) }; }
+    template<typename V>
+    operator Vector4<V>() const { return { static_cast<V>(x), static_cast<V>(y), static_cast<V>(z), static_cast<V>(t) }; }
+
+    template<typename>
+    friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
+    template<typename>
+    friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
+};
 
 template <size_t ROWS, size_t COLS, typename T>
 struct Matrix
@@ -182,6 +147,8 @@ struct Matrix
         T el[SIZE];
         struct { T x, y, z, t; };
     };
+
+    bool transposed = false;
 
     Matrix() : el { 0 } { }
 

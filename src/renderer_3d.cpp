@@ -111,7 +111,7 @@ void RenderContext::apply_texture(Frag &f) const
     float pu = dot(f.bc_viewport, { v[0].tex.u, v[1].tex.u, v[2].tex.u });
     float pv = dot(f.bc_viewport, { v[0].tex.v, v[1].tex.v, v[2].tex.v });
 
-    Vec2Int tcoord = Vec2(pu, pv).scale(tex_scale).apply(std::round);
+    Vec2Int tcoord = Vec2(std::round(pu * tex_scale.x), std::round(pv * tex_scale.y));
     f.color = tex.get(tcoord.u, tcoord.v).val;
 }
 

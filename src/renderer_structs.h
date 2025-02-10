@@ -27,7 +27,7 @@ struct Color32
 
     Vec3Int vec() const { return Vec3Int(r, g, b); }
     Vec3 vecf() const { return Vec3(r, g, b); }
-    Vec3 norm() const { return Vec3(r, g, b).scale(1.f / 255); }
+    Vec3 norm() const { return Vec3(r, g, b) / 255; }
 };
 
 const Color32 COLOR_BLACK    (0xff'00'00'00);
