@@ -3,7 +3,21 @@
 
 #include <cmath>
 #include <iostream>
-#include "vector.h"
+
+template <std::size_t ROWS, std::size_t COLS, bool TRANSPOSED, typename T>
+struct __Matrix;
+
+template <std::size_t ROWS, std::size_t COLS, typename T>
+using Matrix = __Matrix<ROWS, COLS, false, T>;
+
+template <std::size_t ROWS, std::size_t COLS, typename T>
+using MatrixTr = __Matrix<ROWS, COLS, true, T>;
+
+namespace matrix
+{
+    template <std::size_t N, typename T>
+    __Matrix<N, N, false, T> identity();
+}
 
 template <std::size_t ROWS, std::size_t COLS, bool TRANSPOSED, typename T>
 struct __Matrix
@@ -25,10 +39,6 @@ struct __Matrix
 
     __Matrix(const T (&&arr)[SIZE]) { std::move(arr, arr + SIZE, _el); }
 
-    static __Matrix embed(Vector3<T> v);
-
-    Vector3<T> proj();
-
     __Matrix<COLS, ROWS, !TRANSPOSED, T> transpose();
 
     void operator += (const __Matrix &m);
@@ -41,13 +51,5 @@ struct __Matrix
 
     friend std::ostream& operator << (std::ostream &s, __Matrix m);
 };
-
-using Hom = __Matrix<4, 1, false, float>;
-
-template <std::size_t ROWS, std::size_t COLS, typename T>
-using Matrix = __Matrix<ROWS, COLS, false, T>;
-
-template <std::size_t ROWS, std::size_t COLS, typename T>
-using MatrixTr = __Matrix<ROWS, COLS, true, T>;
 
 #endif //MATRIX_H

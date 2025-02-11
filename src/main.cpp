@@ -30,8 +30,8 @@ int main(int argc, char **argv)
         RenderContext context(fenster.getbuff(), w, h);
         set_model(context, model);
 
-        Hom camera_pos = Hom::embed(Vec3(0.f, 0.f, 1.5f));
-        context.set_cam(camera_pos.proj(), Vec3::zero(), Vec3::up());
+        Transform camera_pos = transform::embed(Vec3(0.f, 0.f, 1.5f));
+        context.set_cam(transform::proj3d(camera_pos), Vec3::ZERO, Vec3::UP);
 
         Vec3 mouse_pos(fenster.x(), fenster.y(), 0.f);
 
@@ -55,8 +55,8 @@ int main(int argc, char **argv)
                 float angle = m_dist * 2 * M_PIf/w;
                 Vec3 m_dir = m_delta.normalized();
 
-                camera_pos = tr_rotate({ m_dir.y, m_dir.x, 0.f }, -angle) * camera_pos;
-                context.set_cam(camera_pos.proj(), Vec3::zero(), Vec3::up());
+                camera_pos = transform::rotate({ m_dir.y, m_dir.x, 0.f }, -angle) * camera_pos;
+                context.set_cam(transform::proj3d(camera_pos), Vec3::ZERO, Vec3::UP /*ITS WHY CAMERA IS ROTATING !!!*/);
             }
 
             mouse_pos = new_pos;

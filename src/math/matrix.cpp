@@ -1,5 +1,17 @@
 #include "matrix.h"
 
+namespace matrix
+{
+    template<std::size_t N, typename T>
+    __Matrix<N, N, false, T> matrix::identity()
+    {
+        __Matrix<N, N, false, T> id { };
+        for (int i = 0; i < N; i++)
+            id.set(i, i, static_cast<T>(1));
+        return id;
+    }
+}
+
 template <std::size_t ROWS, std::size_t COLS, bool TRANSPOSED, typename T>
 T __Matrix<ROWS, COLS, TRANSPOSED, T>::get(std::size_t r, std::size_t c)
 {
@@ -31,16 +43,6 @@ template <std::size_t ROWS, std::size_t COLS, bool TRANSPOSED, typename T>
 __Matrix<COLS, ROWS, !TRANSPOSED, T> __Matrix<ROWS, COLS, TRANSPOSED, T>::transpose()
 {
     return __Matrix<COLS, ROWS, !TRANSPOSED, T> { _el };
-}
-
-template<> Hom Hom::embed(Vector3<float> v)
-{
-    return {{ v.x, v.y, v.z, 1.f }};
-}
-
-template<> Vec3 Hom::proj()
-{
-	return { x / t, y / t, z / t };
 }
 
 template <std::size_t ROWS, std::size_t COLS, bool TRANSPOSED, typename T>
@@ -93,14 +95,9 @@ __Matrix<ROWS, R_COLS, false, T> __Matrix<ROWS, COLS, TRANSPOSED, T>::operator *
 {
     __Matrix<ROWS, R_COLS, false, T> res { };
     for (size_t j = 0; j < COLS; j++)
-    for (size_t i = 0; i < ROWS; i++)
-    {
-        T sum = 0;
-        for (size_t k = 0; k < COLS; k++)
-            for (size_t r = 0; r < ROWS; r++)
-                sum += this.get(i, k) * m.get(r, j);
-        res.set(i, j, sum);
-    }
+        for (size_t i = 0; i < ROWS; i++)
+            for (size_t k = 0; k < COLS; k++)
+                res.set(i, j, res.get(i, j) + this.get(i, k) * m.get(k, j));
     return res;
 }
 

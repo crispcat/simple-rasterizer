@@ -1,25 +1,26 @@
 #include <array>
 #include "renderer.h"
+#include "math/transform.h"
 
 void RenderContext::set_cam(Vec3 eye, Vec3 center, Vec3 up)
 {
     Vec3 z = (eye - center).normalized();
-    Vec3 x = vec_cross(up, z).normalized();
-    Vec3 y = vec_cross(z, x).normalized();
+    Vec3 x = vector::cross(up, z).normalized();
+    Vec3 y = vector::cross(z, x).normalized();
 
-    auto base = Matrix<4, 4, float>::identity();
-    auto tran = Matrix<4, 4, float>::identity();
+    auto base = matrix::identity<4, float>();
+    auto tran = matrix::identity<4, float>();
 
     for (int i = 0; i < 3; i++)
     {
-        base[0][i] = x[i];
+        base.set(0, i, x[i]);
         base[1][i] = y[i];
         base[2][i] = z[i];
         tran[i][3] = -eye[i];
     }
 
     view = base * tran;
-    proj = perspective((eye - center).norm());
+    proj = transform::perspective((eye - center).norm());
 }
 
 void RenderContext::set_viewport(uint32_t width, uint32_t height)

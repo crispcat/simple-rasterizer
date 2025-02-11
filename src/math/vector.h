@@ -16,10 +16,13 @@ using Vec2Int = Vector2<int32_t>;
 using Vec3Int = Vector3<int32_t>;
 using Vec4Int = Vector4<int32_t>;
 
-template<typename T> T vec_dot(Vector2<T> a, Vector2<T> b);
-template<typename T> T vec_dot(Vector3<T> a, Vector3<T> b);
-template<typename T> Vector3<T> vec_cross(Vector3<T> a, Vector3<T> b);
-inline Vec3 barycentric2(Vec2 p, Vec2 a, Vec2 b, Vec2 c);
+namespace vector
+{
+    template<typename T> T dot(Vector2<T> a, Vector2<T> b);
+    template<typename T> T dot(Vector3<T> a, Vector3<T> b);
+    template<typename T> Vector3<T> cross(Vector3<T> a, Vector3<T> b);
+    inline Vec3 barycentric2(Vec2 p, Vec2 a, Vec2 b, Vec2 c);
+}
 
 template<typename T>
 struct Vector2
