@@ -4,6 +4,8 @@
 #include "fenster.h"
 #include "renderer.h"
 #include "objmodel.h"
+#include "math/matrix.h"
+#include "math/transform.h"
 
 void set_model(RenderContext &c, const ObjModel &m);
 
@@ -28,8 +30,8 @@ int main(int argc, char **argv)
         RenderContext context(fenster.getbuff(), w, h);
         set_model(context, model);
 
-        Hom camera_pos(Vec3(0.f, 0.f, 1.5f));
-        context.set_cam(camera_pos.proj3d(), Vec3::zero(), Vec3::up());
+        Hom camera_pos = Hom::embed(Vec3(0.f, 0.f, 1.5f));
+        context.set_cam(camera_pos.proj(), Vec3::zero(), Vec3::up());
 
         Vec3 mouse_pos(fenster.x(), fenster.y(), 0.f);
 
@@ -53,8 +55,8 @@ int main(int argc, char **argv)
                 float angle = m_dist * 2 * M_PIf/w;
                 Vec3 m_dir = m_delta.normalized();
 
-                camera_pos = rotate({ m_dir.y, m_dir.x, 0.f }, -angle) * camera_pos;
-                context.set_cam(camera_pos.proj3d(), Vec3::zero(), Vec3::up());
+                camera_pos = tr_rotate({ m_dir.y, m_dir.x, 0.f }, -angle) * camera_pos;
+                context.set_cam(camera_pos.proj(), Vec3::zero(), Vec3::up());
             }
 
             mouse_pos = new_pos;

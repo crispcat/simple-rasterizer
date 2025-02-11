@@ -1,10 +1,9 @@
 #ifndef SIMPLE_RASTERIZER_TESTS_H
 #define SIMPLE_RASTERIZER_TESTS_H
 
-#include "geometry.h"
 #include "renderer.h"
 
-void draw_primitives_triangles(RenderContext &c)
+inline void draw_primitives_triangles(RenderContext &c)
 {
     c.start_frame();
     c.foregr_color = COLOR_WHITE;
@@ -25,7 +24,7 @@ void draw_primitives_triangles(RenderContext &c)
 #endif
 }
 
-void draw_primitives_lines(RenderContext &c)
+inline void draw_primitives_lines(RenderContext &c)
 {
     c.start_frame();
     c.foregr_color = COLOR_GREEN;
@@ -51,7 +50,7 @@ void draw_primitives_lines(RenderContext &c)
     c.line(50, 50, 50, 75);
 }
 
-void calc_vectors()
+inline void calc_vectors()
 {
 //#ifdef PROFILE
 //    std::cout.setstate(std::ios_base::failbit);
@@ -62,53 +61,49 @@ void calc_vectors()
     std::cout << "Vec2Int:\n";
     std::cout << vec2intA << " + " << vec2intB << " = " << vec2intA + vec2intB << '\n';
     std::cout << vec2intA << " - " << vec2intB << " = " << vec2intA - vec2intB << '\n';
-    std::cout << vec2intA << " dot " << vec2intB << " = " << dot(vec2intA, vec2intB) << '\n';
+    std::cout << vec2intA << " dot " << vec2intB << " = " << vec_dot(vec2intA, vec2intB) << '\n';
     std::cout << "norm" << vec2intA << " = " << vec2intA.norm() << '\n';
     std::cout << "sqnorm" << vec2intA << " = " << vec2intA.sqnorm() << '\n';
     std::cout << "normalized" << vec2intA << " = " << vec2intA.normalized() << '\n';
-    std::cout << "scale -5" << vec2intA << " = " << vec2intA.scale(-5) << '\n';
 
     Vec2 vec2floatA(1.744, -2.33);
     Vec2 vec2floatB(-4.0, 3.5);
     std::cout << "Vec2:\n";
     std::cout << vec2floatA << " + " << vec2floatB << " = " << vec2floatA + vec2floatB << '\n';
     std::cout << vec2floatA << " - " << vec2floatB << " = " << vec2floatA - vec2floatB << '\n';
-    std::cout << vec2floatA << " dot " << vec2floatB << " = " << dot(vec2floatA, vec2floatB) << '\n';
+    std::cout << vec2floatA << " dot " << vec2floatB << " = " << vec_dot(vec2floatA, vec2floatB) << '\n';
     std::cout << "norm" << vec2floatA << " = " << vec2floatA.norm() << '\n';
     std::cout << "sqnorm" << vec2floatA << " = " << vec2floatA.sqnorm() << '\n';
     std::cout << "normalized" << vec2floatA << " = " << vec2floatA.normalized() << '\n';
-    std::cout << "scale -5" << vec2floatA << " = " << vec2floatA.scale(-5) << '\n';
 
     Vec3Int vec3intA(1, -2, 8);
     Vec3Int vec3intB(-4, 3, -1);
     std::cout << "Vec3Int:\n";
     std::cout << vec3intA << " + " << vec3intB << " = " << vec3intA + vec3intB << '\n';
     std::cout << vec3intA << " - " << vec3intB << " = " << vec3intA - vec3intB << '\n';
-    std::cout << vec3intA << " dot " << vec3intB << " = " << dot(vec3intA, vec3intB) << '\n';
-    std::cout << vec3intA << " cross " << vec3intB << " = " << cross(vec3intA, vec3intB) << '\n';
+    std::cout << vec3intA << " dot " << vec3intB << " = " << vec_dot(vec3intA, vec3intB) << '\n';
+    std::cout << vec3intA << " cross " << vec3intB << " = " << vec_cross(vec3intA, vec3intB) << '\n';
     std::cout << "norm" << vec3intA << " = " << vec3intA.norm() << '\n';
     std::cout << "sqnorm" << vec3intA << " = " << vec3intA.sqnorm() << '\n';
     std::cout << "normalized" << vec3intA << " = " << vec3intA.normalized() << '\n';
-    std::cout << "scale -5" << vec3intA << " = " << vec3intA.scale(-5) << '\n';
 
     Vec3 vec3floatA(1.744, -2.33, 8.3333333);
     Vec3 vec3floatB(-4.0, 3.5, -1.91);
     std::cout << "Vec3:\n";
     std::cout << vec3floatA << " + " << vec3floatB << " = " << vec3floatA + vec3floatB << '\n';
     std::cout << vec3floatA << " - " << vec3floatB << " = " << vec3floatA - vec3floatB << '\n';
-    std::cout << vec3floatA << " dot " << vec3floatB << " = " << dot(vec3floatA, vec3floatB) << '\n';
-    std::cout << vec3floatA << " cross " << vec3floatB << " = " << cross(vec3floatA, vec3floatB) << '\n';
+    std::cout << vec3floatA << " dot " << vec3floatB << " = " << vec_dot(vec3floatA, vec3floatB) << '\n';
+    std::cout << vec3floatA << " cross " << vec3floatB << " = " << vec_cross(vec3floatA, vec3floatB) << '\n';
     std::cout << "norm" << vec3floatA << " = " << vec3floatA.norm() << '\n';
     std::cout << "sqnorm" << vec3floatA << " = " << vec3floatA.sqnorm() << '\n';
     std::cout << "normalized" << vec3floatA << " = " << vec3floatA.normalized() << '\n';
-    std::cout << "scale -5" << vec3floatA << " = " << vec3floatA.scale(-5) << '\n';
     std::cout << '\n';
 //#ifdef PROFILE
 //    }
 //#endif
 }
 
-void calc_matrices()
+inline void calc_matrices()
 {
     Matrix<2, 5, float> m1 {{
         3,    7,  -2,   12,  4,

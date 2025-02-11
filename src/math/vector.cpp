@@ -50,39 +50,3 @@ inline Vec3 barycentric2(Vec2 p, Vec2 a, Vec2 b, Vec2 c)
 
     return { 1.f - (uv.x + uv.y) / uv.z, uv.x / uv.z, uv.y / uv.z };
 }
-
-template<typename T>
-std::ostream& operator << (std::ostream &s, Vector2<T> v)
-{
-    return s << "(" << v.x << ", " << v.y << ")";
-}
-
-template<typename T>
-std::istream& operator >> (std::istream &s, Vector2<T> &v)
-{
-    return s >> v.x >> v.y;
-}
-
-template<typename T>
-std::ostream& operator << (std::ostream &s, Vector3<T> v)
-{
-    return s << "(" << v.x << ", " << v.y << ", " << v.z << ")";
-}
-
-template<typename T>
-std::istream& operator >> (std::istream &s, Vector3<T> &v)
-{
-    return s >> v.x >> v.y >> v.z;
-}
-
-template<typename T>
-std::ostream& operator << (std::ostream &s, Vector4<T> v)
-{
-    return s << "(" << v.x << ", " << v.y << ", " << v.z << ", " << v.t << ")";
-}
-
-template<typename T>
-std::istream& operator >> (std::istream &s, Vector4<T> &v)
-{
-    return s >> v.x >> v.y >> v.z >> v.t;
-}

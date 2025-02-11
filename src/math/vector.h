@@ -16,6 +16,11 @@ using Vec2Int = Vector2<int32_t>;
 using Vec3Int = Vector3<int32_t>;
 using Vec4Int = Vector4<int32_t>;
 
+template<typename T> T vec_dot(Vector2<T> a, Vector2<T> b);
+template<typename T> T vec_dot(Vector3<T> a, Vector3<T> b);
+template<typename T> Vector3<T> vec_cross(Vector3<T> a, Vector3<T> b);
+inline Vec3 barycentric2(Vec2 p, Vec2 a, Vec2 b, Vec2 c);
+
 template<typename T>
 struct Vector2
 {
@@ -51,8 +56,8 @@ struct Vector2
     template<typename> friend std::ostream& operator << (std::ostream &s, Vector2<T> v);
     template<typename> friend std::istream& operator >> (std::istream &s, Vector2<T> &v);
 
-    static constexpr Vector2<T> zero () { return { }; }
-    static constexpr Vector2<T> one  () { return { 1, 1 }; }
+    static const Vector2<T> ZERO = { 0, 0 };
+    static const Vector2<T> ONE  = { 1, 1 };
 };
 
 template<typename T>
@@ -88,17 +93,17 @@ struct Vector3
     template<typename V> operator Vector2<V>() const { return { static_cast<V>(x), static_cast<V>(y) }; }
     template<typename V> operator Vector3<V>() const { return { static_cast<V>(x), static_cast<V>(y), static_cast<V>(z) }; }
 
-    template<typename> friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
-    template<typename> friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
+    template<typename> friend std::ostream& operator << (std::ostream &s, Vector3<T> v);
+    template<typename> friend std::istream& operator >> (std::istream &s, Vector3<T> &v);
 
-    static constexpr Vector3<T> zero    () { return { }; }
-    static constexpr Vector3<T> one     () { return { 1, 1, 1 }; }
-    static constexpr Vector3<T> right   () { return { 1, 0, 0 }; }
-    static constexpr Vector3<T> up      () { return { 0, 1, 0 }; }
-    static constexpr Vector3<T> forward () { return { 0, 0, 1 }; }
-    static constexpr Vector3<T> left    () { return { -1,  0,  0 }; }
-    static constexpr Vector3<T> down    () { return {  0, -1,  0 }; }
-    static constexpr Vector3<T> back    () { return {  0,  0, -1 }; }
+    static const Vector3<T> ZERO    =  { 0, 0, 0 };
+    static const Vector3<T> ONE     =  { 1, 1, 1 };
+    static const Vector3<T> RIGHT   =  { 1, 0, 0 };
+    static const Vector3<T> UP      =  { 0, 1, 0 };
+    static const Vector3<T> FORWARD =  { 0, 0, 1 };
+    static const Vector3<T> LEFT    =  { -1,  0,  0 };
+    static const Vector3<T> DOWN    =  {  0, -1,  0 };
+    static const Vector3<T> BACK    =  {  0,  0, -1 };
 };
 
 template<typename T>
@@ -138,9 +143,45 @@ struct Vector4
     operator Vector4<V>() const { return { static_cast<V>(x), static_cast<V>(y), static_cast<V>(z), static_cast<V>(t) }; }
 
     template<typename>
-    friend inline std::ostream& operator << (std::ostream &s, Vector3<T> v);
+    friend std::ostream& operator << (std::ostream &s, Vector3<T> v);
     template<typename>
-    friend inline std::istream& operator >> (std::istream &s, Vector3<T> &v);
+    friend std::istream& operator >> (std::istream &s, Vector3<T> &v);
 };
+
+template<typename T>
+std::ostream& operator << (std::ostream &s, const Vector2<T> v)
+{
+    return s << "(" << v.x << ", " << v.y << ")";
+}
+
+template<typename T>
+std::istream& operator >> (std::istream &s, Vector2<T> &v)
+{
+    return s >> v.x >> v.y;
+}
+
+template<typename T>
+std::ostream& operator << (std::ostream &s, const Vector3<T> v)
+{
+    return s << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+}
+
+template<typename T>
+std::istream& operator >> (std::istream &s, Vector3<T> &v)
+{
+    return s >> v.x >> v.y >> v.z;
+}
+
+template<typename T>
+std::ostream& operator << (std::ostream &s, const Vector4<T> v)
+{
+    return s << "(" << v.x << ", " << v.y << ", " << v.z << ", " << v.t << ")";
+}
+
+template<typename T>
+std::istream& operator >> (std::istream &s, Vector4<T> &v)
+{
+    return s >> v.x >> v.y >> v.z >> v.t;
+}
 
 #endif //VECTOR_H

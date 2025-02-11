@@ -3,6 +3,7 @@
 #include <iostream>
 #include <filesystem>
 #include "objmodel.h"
+#include "math/vector.h"
 
 ObjModel::ObjModel(const std::string &path)
 {
@@ -88,6 +89,6 @@ void ObjModel::parse_face_vertx(std::istringstream &s)
             else
                 s >> ivec.iuv >> ch >> ivec.in;
         }
-        faces.push_back(ivec - Vec3::one()); // sub to make indexes start from 0
+        faces.push_back(ivec - Vec3::ONE); // sub to make indexes start from 0
     }
 }

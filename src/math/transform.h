@@ -1,16 +1,11 @@
-#ifndef SIMPLE_RASTERIZER_GEOMETRY_H
-#define SIMPLE_RASTERIZER_GEOMETRY_H
+#ifndef TRANSFORM_H
+#define TRANSFORM_H
 
-#include <cmath>
-#include <cstdint>
-#include <iostream>
+#include "matrix.h"
 
+using Transform = __Matrix<4, 4, false, float>;
 
-
-using Hom = Matrix<4, 1, float>;
-using Transform = Matrix<4, 4, float>;
-
-inline Transform translate(Vec3 delta)
+inline Transform tr_translate(Vec3 delta)
 {
     float &x = delta.x;
     float &y = delta.y;
@@ -23,7 +18,7 @@ inline Transform translate(Vec3 delta)
     }};
 }
 
-inline Transform scale(Vec3 scale)
+inline Transform tr_scale(Vec3 scale)
 {
     float &x = scale.x;
     float &y = scale.y;
@@ -36,7 +31,7 @@ inline Transform scale(Vec3 scale)
     }};
 }
 
-inline Transform rotate(Vec3 axis, float angle)
+inline Transform tr_rotate(Vec3 axis, float angle)
 {
     float c = cos(angle);
     float s = sin(angle);
@@ -50,7 +45,7 @@ inline Transform rotate(Vec3 axis, float angle)
     }};
 }
 
-inline Transform perspective(float c_dist)
+inline Transform tr_perspective(float c_dist)
 {
     float c = -1.f / c_dist;
     return {{
@@ -61,22 +56,22 @@ inline Transform perspective(float c_dist)
     }};
 }
 
-template <class T>
-inline T clamp0(T val)
+template <typename T>
+T clamp0(T val)
 {
     return val < 0 ? 0 : val;
 }
 
-template <class T>
-inline T clamp01(T val)
+template <typename T>
+T clamp01(T val)
 {
     return val < 0 ? 0 : val > 1 ? 1 : val;
 }
 
-template <class T>
-inline T clamp(T val, T min, T max)
+template <typename T>
+T clamp(T val, T min, T max)
 {
     return val < min ? min : val > max ? max : val;
 }
 
-#endif //SIMPLE_RASTERIZER_GEOMETRY_H
+#endif //TRANSFORM_H

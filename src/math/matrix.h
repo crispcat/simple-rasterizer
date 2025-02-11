@@ -2,13 +2,11 @@
 #define MATRIX_H
 
 #include <cmath>
-#include <cstdint>
 #include <iostream>
-
 #include "vector.h"
 
 template <std::size_t ROWS, std::size_t COLS, bool TRANSPOSED, typename T>
-struct Matrix
+struct __Matrix
 {
     static const std::size_t SIZE = ROWS * COLS;
 
@@ -18,35 +16,38 @@ struct Matrix
         struct { T x, y, z, t; };
     };
 
-    inline T get(std::size_t row, std::size_t col);
-    inline void set(std::size_t row, std::size_t col, T val);
+    T get(size_t row, size_t col);
+    void set(size_t row, size_t col, T val);
 
-    Matrix() : _el { 0 } { }
+    __Matrix() : _el { 0 } { }
 
-    Matrix(const T (&arr)[SIZE]) { std::copy(arr, arr + SIZE, _el); }
+    __Matrix(const T (&arr)[SIZE]) { std::copy(arr, arr + SIZE, _el); }
 
-    Matrix(const T (&&arr)[SIZE]) { std::move(arr, arr + SIZE, _el); }
+    __Matrix(const T (&&arr)[SIZE]) { std::move(arr, arr + SIZE, _el); }
 
-    static Matrix embed(Vector3<T> v);
+    static __Matrix embed(Vector3<T> v);
 
     Vector3<T> proj();
 
-    template<std::size_t RROWS, std::size_t RCOLS, bool RTRANSPOSED>
-    void operator += (Matrix<RROWS, RCOLS, RTRANSPOSED, T> m);
+    __Matrix<COLS, ROWS, !TRANSPOSED, T> transpose();
 
-    template<std::size_t RROWS, std::size_t RCOLS, bool RTRANSPOSED>
-    void operator -= (Matrix<RROWS, RCOLS, RTRANSPOSED, T> m);
+    void operator += (const __Matrix &m);
+    void operator -= (const __Matrix &m);
+    __Matrix<ROWS, COLS, false, T> operator + (const __Matrix &m);
+    __Matrix<ROWS, COLS, false, T> operator - (const __Matrix &m);
 
-    template<std::size_t RROWS, std::size_t RCOLS, bool RTRANSPOSED>
-    Matrix operator + (Matrix<RROWS, RCOLS, RTRANSPOSED, T> m) const;
+    template <size_t R_COLS, bool R_TRANSPOSED>
+    __Matrix<ROWS, R_COLS, false, T> operator * (const __Matrix<COLS, R_COLS, R_TRANSPOSED, T> &m);
 
-    template<std::size_t RROWS, std::size_t RCOLS, bool RTRANSPOSED>
-    Matrix operator - (Matrix<RROWS, RCOLS, RTRANSPOSED, T> m) const;
-
-    template<std::size_t RROWS, std::size_t RCOLS, bool RTRANSPOSED>
-    Matrix operator * (Matrix<RROWS, RCOLS, RTRANSPOSED, T> m) const;
-
-    friend inline std::ostream& operator << (std::ostream &s, Matrix<ROWS, COLS, TRANSPOSED, T> m);
+    friend std::ostream& operator << (std::ostream &s, __Matrix m);
 };
+
+using Hom = __Matrix<4, 1, false, float>;
+
+template <std::size_t ROWS, std::size_t COLS, typename T>
+using Matrix = __Matrix<ROWS, COLS, false, T>;
+
+template <std::size_t ROWS, std::size_t COLS, typename T>
+using MatrixTr = __Matrix<ROWS, COLS, true, T>;
 
 #endif //MATRIX_H

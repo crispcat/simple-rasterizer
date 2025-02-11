@@ -4,8 +4,8 @@
 void RenderContext::set_cam(Vec3 eye, Vec3 center, Vec3 up)
 {
     Vec3 z = (eye - center).normalized();
-    Vec3 x = cross(up, z).normalized();
-    Vec3 y = cross(z, x).normalized();
+    Vec3 x = vec_cross(up, z).normalized();
+    Vec3 y = vec_cross(z, x).normalized();
 
     auto base = Matrix<4, 4, float>::identity();
     auto tran = Matrix<4, 4, float>::identity();

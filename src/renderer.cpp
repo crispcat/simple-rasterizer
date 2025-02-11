@@ -1,6 +1,5 @@
-#include <vector>
 #include "renderer.h"
-#include "geometry.h"
+#include "math/vector.h"
 
 RenderContext::RenderContext(uint32_t *frame_buff, uint16_t width, uint16_t height) :
     w(),
@@ -21,7 +20,7 @@ void RenderContext::set_buff(uint32_t *frame_buff, uint16_t width, uint16_t heig
     delete[] z_buff; z_buff = new DepthBufferValue[w * h];
     delete[] frag_locks; frag_locks = new std::atomic_flag[w * h];
     for (uint32_t i = 0; i < w * h; i++) frag_locks[i].clear();
-    set_cam({ 0.f, 0.f, 1.f }, Vec3::zero(), Vec3::up());
+    set_cam({ 0.f, 0.f, 1.f }, Vec3::ZERO, Vec3::UP);
     set_viewport(w, h);
 }
 

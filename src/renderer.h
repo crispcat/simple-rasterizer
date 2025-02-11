@@ -2,10 +2,11 @@
 #define SIMPLE_RASTERIZER_RENDERER_H
 
 #include <vector>
-#include "geometry.h"
 #include "tgaimage.h"
 #include "thread_pool.h"
 #include "renderer_structs.h"
+#include "math/matrix.h"
+#include "math/vector.h"
 
 class RenderContext
 {
@@ -15,7 +16,7 @@ public:
     std::vector<Vec2> uvs{};
     std::vector<Vec3> normals{};
     std::vector<Vec3Int> faces{};
-    Vec3 light_dir = Vec3::back();
+    Vec3 light_dir = Vec3::BACK;
 
 public:
     Color32 foregr_color = COLOR_WHITE;

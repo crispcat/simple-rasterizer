@@ -3,9 +3,8 @@
 
 #include <vector>
 #include <string>
-#include "geometry.h"
 #include "tgaimage.h"
-#include "renderer_structs.h"
+#include "math/vector.h"
 
 class ObjModel
 {
