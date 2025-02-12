@@ -5,6 +5,7 @@
 #include "renderer.h"
 #include "objmodel.h"
 #include "math/matrix.h"
+#include "math/vector.h"
 #include "math/transform.h"
 
 void set_model(RenderContext &c, const ObjModel &m);
@@ -31,7 +32,7 @@ int main(int argc, char **argv)
         set_model(context, model);
 
         Transform camera_pos = transform::embed(Vec3(0.f, 0.f, 1.5f));
-        context.set_cam(transform::proj3d(camera_pos), Vec3::ZERO, Vec3::UP);
+        context.set_cam(transform::proj3d(camera_pos), vector::ZERO, vector::UP);
 
         Vec3 mouse_pos(fenster.x(), fenster.y(), 0.f);
 
@@ -56,7 +57,7 @@ int main(int argc, char **argv)
                 Vec3 m_dir = m_delta.normalized();
 
                 camera_pos = transform::rotate({ m_dir.y, m_dir.x, 0.f }, -angle) * camera_pos;
-                context.set_cam(transform::proj3d(camera_pos), Vec3::ZERO, Vec3::UP /*ITS WHY CAMERA IS ROTATING !!!*/);
+                context.set_cam(transform::proj3d(camera_pos), vector::ZERO, vector::UP /*ITS WHY CAMERA IS ROTATING !!!*/);
             }
 
             mouse_pos = new_pos;
@@ -65,7 +66,7 @@ int main(int argc, char **argv)
     else if (mode == "tga")
     {
         TgaImage image(w, h, TgaImage::Format::RGBA);
-        RenderContext context((uint32_t*)image.buffer(), w, h);
+        RenderContext context(reinterpret_cast<uint32_t*>(image.buffer()), w, h);
 
         set_model(context, model);
         context.render();
@@ -81,12 +82,12 @@ int main(int argc, char **argv)
         TgaImage image1(100, 100, TgaImage::Format::RGBA);
         TgaImage image2(200, 200, TgaImage::Format::RGBA);
 
-        RenderContext context((uint32_t*) image1.buffer(), 100, 100);
+        RenderContext context(reinterpret_cast<uint32_t*>(image1.buffer()), 100, 100);
         draw_primitives_lines(context);
         image1.write_tga_file("lines.tga");
         std::cout << "Lines test rendered to lines.tga" << std::endl;
 
-        context.set_buff((uint32_t*) image2.buffer(), 200, 200);
+        context.set_buff(reinterpret_cast<uint32_t*>(image2.buffer()), 200, 200);
         draw_primitives_triangles(context);
         image2.write_tga_file("triangles.tga");
         std::cout << "Triangles test rendered to drawcall.tga" << std::endl;

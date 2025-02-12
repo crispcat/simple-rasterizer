@@ -6,12 +6,12 @@
 inline void draw_primitives_triangles(RenderContext &c)
 {
     c.start_frame();
-    c.foregr_color = COLOR_WHITE;
+    c.foregr_color = color32::WHITE;
     c.triangle_lined(10,70, 50,160, 70,80);
     c.triangle_lined(180,50, 150,1, 70,180);
     c.triangle_lined(180,150, 120,160, 130,180);
 #ifndef PROFILE
-    c.foregr_color = COLOR_GREEN;
+    c.foregr_color = color32::GREEN;
     c.line(10,70,  50,160);
     c.line(50,160, 70,80);
     c.line(10,70,  70,80);
@@ -27,13 +27,13 @@ inline void draw_primitives_triangles(RenderContext &c)
 inline void draw_primitives_lines(RenderContext &c)
 {
     c.start_frame();
-    c.foregr_color = COLOR_GREEN;
+    c.foregr_color = color32::GREEN;
     c.line(50, 50, 75, 75);
     c.line(50, 50, 75, 25);
     c.line(50, 50, 25, 25);
     c.line(50, 50, 25, 75);
 
-    c.foregr_color = COLOR_RED;
+    c.foregr_color = color32::RED;
     c.line(50, 50, 75, 85);
     c.line(50, 50, 75, 65);
     c.line(50, 50, 75, 35);
@@ -43,7 +43,7 @@ inline void draw_primitives_lines(RenderContext &c)
     c.line(50, 50, 25, 65);
     c.line(50, 50, 25, 85);
 
-    c.foregr_color = COLOR_WHITE;
+    c.foregr_color = color32::WHITE;
     c.line(50, 50, 75, 50);
     c.line(50, 50, 50, 25);
     c.line(50, 50, 25, 50);
@@ -61,7 +61,7 @@ inline void calc_vectors()
     std::cout << "Vec2Int:\n";
     std::cout << vec2intA << " + " << vec2intB << " = " << vec2intA + vec2intB << '\n';
     std::cout << vec2intA << " - " << vec2intB << " = " << vec2intA - vec2intB << '\n';
-    std::cout << vec2intA << " dot " << vec2intB << " = " << vec_dot(vec2intA, vec2intB) << '\n';
+    std::cout << vec2intA << " dot " << vec2intB << " = " << vector::dot(vec2intA, vec2intB) << '\n';
     std::cout << "norm" << vec2intA << " = " << vec2intA.norm() << '\n';
     std::cout << "sqnorm" << vec2intA << " = " << vec2intA.sqnorm() << '\n';
     std::cout << "normalized" << vec2intA << " = " << vec2intA.normalized() << '\n';
@@ -71,7 +71,7 @@ inline void calc_vectors()
     std::cout << "Vec2:\n";
     std::cout << vec2floatA << " + " << vec2floatB << " = " << vec2floatA + vec2floatB << '\n';
     std::cout << vec2floatA << " - " << vec2floatB << " = " << vec2floatA - vec2floatB << '\n';
-    std::cout << vec2floatA << " dot " << vec2floatB << " = " << vec_dot(vec2floatA, vec2floatB) << '\n';
+    std::cout << vec2floatA << " dot " << vec2floatB << " = " << vector::dot(vec2floatA, vec2floatB) << '\n';
     std::cout << "norm" << vec2floatA << " = " << vec2floatA.norm() << '\n';
     std::cout << "sqnorm" << vec2floatA << " = " << vec2floatA.sqnorm() << '\n';
     std::cout << "normalized" << vec2floatA << " = " << vec2floatA.normalized() << '\n';
@@ -81,8 +81,8 @@ inline void calc_vectors()
     std::cout << "Vec3Int:\n";
     std::cout << vec3intA << " + " << vec3intB << " = " << vec3intA + vec3intB << '\n';
     std::cout << vec3intA << " - " << vec3intB << " = " << vec3intA - vec3intB << '\n';
-    std::cout << vec3intA << " dot " << vec3intB << " = " << vec_dot(vec3intA, vec3intB) << '\n';
-    std::cout << vec3intA << " cross " << vec3intB << " = " << vec_cross(vec3intA, vec3intB) << '\n';
+    std::cout << vec3intA << " dot " << vec3intB << " = " << vector::dot(vec3intA, vec3intB) << '\n';
+    std::cout << vec3intA << " cross " << vec3intB << " = " << vector::cross(vec3intA, vec3intB) << '\n';
     std::cout << "norm" << vec3intA << " = " << vec3intA.norm() << '\n';
     std::cout << "sqnorm" << vec3intA << " = " << vec3intA.sqnorm() << '\n';
     std::cout << "normalized" << vec3intA << " = " << vec3intA.normalized() << '\n';
@@ -92,8 +92,8 @@ inline void calc_vectors()
     std::cout << "Vec3:\n";
     std::cout << vec3floatA << " + " << vec3floatB << " = " << vec3floatA + vec3floatB << '\n';
     std::cout << vec3floatA << " - " << vec3floatB << " = " << vec3floatA - vec3floatB << '\n';
-    std::cout << vec3floatA << " dot " << vec3floatB << " = " << vec_dot(vec3floatA, vec3floatB) << '\n';
-    std::cout << vec3floatA << " cross " << vec3floatB << " = " << vec_cross(vec3floatA, vec3floatB) << '\n';
+    std::cout << vec3floatA << " dot " << vec3floatB << " = " << vector::dot(vec3floatA, vec3floatB) << '\n';
+    std::cout << vec3floatA << " cross " << vec3floatB << " = " << vector::cross(vec3floatA, vec3floatB) << '\n';
     std::cout << "norm" << vec3floatA << " = " << vec3floatA.norm() << '\n';
     std::cout << "sqnorm" << vec3floatA << " = " << vec3floatA.sqnorm() << '\n';
     std::cout << "normalized" << vec3floatA << " = " << vec3floatA.normalized() << '\n';

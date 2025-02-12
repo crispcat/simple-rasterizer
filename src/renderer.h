@@ -16,11 +16,11 @@ public:
     std::vector<Vec2> uvs{};
     std::vector<Vec3> normals{};
     std::vector<Vec3Int> faces{};
-    Vec3 light_dir = Vec3::BACK;
+    Vec3 light_dir = vector::BACK;
 
 public:
-    Color32 foregr_color = COLOR_WHITE;
-    Color32 backgr_color = COLOR_BLACK;
+    Color32 foregr_color = color32::WHITE;
+    Color32 backgr_color = color32::BLACK;
 
 public:
     explicit RenderContext(uint32_t *frame_buff, uint16_t width, uint16_t height);
@@ -58,9 +58,9 @@ protected:
     BS::thread_pool_light t_pool;
 
 protected:
-    Matrix<4, 4, float> view;
-    Matrix<4, 4, float> proj;
-    Matrix<4, 4, float> viewport;
+    Projection view;
+    Projection persp;
+    Projection viewport;
 
 protected:
     void vert(Vert &v) const;

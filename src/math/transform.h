@@ -10,7 +10,7 @@ namespace transform
 {
     inline Transform embed(const Vector3<float> &v)
     {
-        return {{ v.x, v.y, v.z, 1.f }};
+        return Transform {{ v.x, v.y, v.z, 1.f }};
     }
 
     inline Vector3<float> proj3d(const Transform &tr)
@@ -23,7 +23,7 @@ namespace transform
         const float &x = delta.x;
         const float &y = delta.y;
         const float &z = delta.z;
-        return {{
+        return Projection {{
             1, 0, 0, x,
             0, 1, 0, y,
             0, 0, 1, z,
@@ -36,7 +36,7 @@ namespace transform
         const float &x = scale.x;
         const float &y = scale.y;
         const float &z = scale.z;
-        return {{
+        return Projection {{
             x, 0, 0, 0,
             0, y, 0, 0,
             0, 0, z, 0,
@@ -50,7 +50,7 @@ namespace transform
         const float s = sin(angle);
         const float _1_c = 1 - c;
         const Vec3 &a = axis;
-        return {{
+        return Projection {{
             (c + a.x * a.x * _1_c),        (a.x * a.y * _1_c - a.z * s),  (a.x * a.z * _1_c + a.y * s),  0,
             (a.y * a.x * _1_c + a.z * s),  (c + a.y * a.y * _1_c),        (a.y * a.z * _1_c - a.x * s),  0,
             (a.z * a.x * _1_c - a.y * s),  (a.z * a.y * _1_c + a.x * s),  (c + a.z * a.z * _1_c),        0,
@@ -61,7 +61,7 @@ namespace transform
     inline Projection perspective(const float &c_dist)
     {
         const float c = -1.f / c_dist;
-        return {{
+        return Projection {{
             1,   0,   0,   0,
             0,  -1,   0,   0,
             0,   0,   1,   0,

@@ -21,7 +21,7 @@ namespace vector
     template<typename T> T dot(Vector2<T> a, Vector2<T> b);
     template<typename T> T dot(Vector3<T> a, Vector3<T> b);
     template<typename T> Vector3<T> cross(Vector3<T> a, Vector3<T> b);
-    inline Vec3 barycentric2(Vec2 p, Vec2 a, Vec2 b, Vec2 c);
+    Vec3 barycentric2(Vec2 p, Vec2 a, Vec2 b, Vec2 c);
 }
 
 template<typename T>
@@ -31,6 +31,7 @@ struct Vector2
     {
         struct{ T x, y; };
         struct{ T u, v; };
+        struct{ T r, c; };
         T raw[2];
     };
 
@@ -53,14 +54,13 @@ struct Vector2
 
     Vector2<T> apply(T (*a)(T)) { return { a(x), a(y) }; }
 
-    template<typename V> operator Vector2<V>() { return { static_cast<V>(x), static_cast<V>(y) }; }
-    template<typename V> operator Vector3<V>() { return { static_cast<V>(x), static_cast<V>(y), T{} }; }
+    template<typename V>
+    operator Vector2<V>() { return { static_cast<V>(x), static_cast<V>(y) }; }
+    template<typename V>
+    operator Vector3<V>() { return { static_cast<V>(x), static_cast<V>(y), T{} }; }
 
     template<typename> friend std::ostream& operator << (std::ostream &s, Vector2<T> v);
     template<typename> friend std::istream& operator >> (std::istream &s, Vector2<T> &v);
-
-    static const Vector2<T> ZERO = { 0, 0 };
-    static const Vector2<T> ONE  = { 1, 1 };
 };
 
 template<typename T>
@@ -93,20 +93,13 @@ struct Vector3
 
     Vector3<T> apply(T (*f)(T)) const { return { f(x), f(y), f(z) }; }
 
-    template<typename V> operator Vector2<V>() const { return { static_cast<V>(x), static_cast<V>(y) }; }
-    template<typename V> operator Vector3<V>() const { return { static_cast<V>(x), static_cast<V>(y), static_cast<V>(z) }; }
+    template<typename V>
+    operator Vector2<V>() const { return { static_cast<V>(x), static_cast<V>(y) }; }
+    template<typename V>
+    operator Vector3<V>() const { return { static_cast<V>(x), static_cast<V>(y), static_cast<V>(z) }; }
 
     template<typename> friend std::ostream& operator << (std::ostream &s, Vector3<T> v);
     template<typename> friend std::istream& operator >> (std::istream &s, Vector3<T> &v);
-
-    static const Vector3<T> ZERO    =  { 0, 0, 0 };
-    static const Vector3<T> ONE     =  { 1, 1, 1 };
-    static const Vector3<T> RIGHT   =  { 1, 0, 0 };
-    static const Vector3<T> UP      =  { 0, 1, 0 };
-    static const Vector3<T> FORWARD =  { 0, 0, 1 };
-    static const Vector3<T> LEFT    =  { -1,  0,  0 };
-    static const Vector3<T> DOWN    =  {  0, -1,  0 };
-    static const Vector3<T> BACK    =  {  0,  0, -1 };
 };
 
 template<typename T>
@@ -150,6 +143,18 @@ struct Vector4
     template<typename>
     friend std::istream& operator >> (std::istream &s, Vector3<T> &v);
 };
+
+namespace vector
+{
+    static const Vector3 ZERO     =  { 0.f, 0.f, 0.f };
+    static const Vector3 ONE      =  { 1.f, 1.f, 1.f };
+    static const Vector3 RIGHT    =  { 1.f, 0.f, 0.f };
+    static const Vector3 UP       =  { 0.f, 1.f, 0.f };
+    static const Vector3 FORWARD  =  { 0.f, 0.f, 1.f };
+    static const Vector3 LEFT     =  { -1.f,  0.f,  0.f };
+    static const Vector3 DOWN     =  {  0.f, -1.f,  0.f };
+    static const Vector3 BACK     =  {  0.f,  0.f, -1.f };
+}
 
 template<typename T>
 std::ostream& operator << (std::ostream &s, const Vector2<T> v)

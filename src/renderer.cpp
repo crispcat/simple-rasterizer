@@ -20,13 +20,15 @@ void RenderContext::set_buff(uint32_t *frame_buff, uint16_t width, uint16_t heig
     delete[] z_buff; z_buff = new DepthBufferValue[w * h];
     delete[] frag_locks; frag_locks = new std::atomic_flag[w * h];
     for (uint32_t i = 0; i < w * h; i++) frag_locks[i].clear();
-    set_cam({ 0.f, 0.f, 1.f }, Vec3::ZERO, Vec3::UP);
+    set_cam({ 0.f, 0.f, 1.f }, vector::ZERO, vector::UP);
     set_viewport(w, h);
 }
 
 void RenderContext::set_tex(const TgaImage &t)
 {
-    tex_scale = Vec3((float)t.get_width(), (float)t.get_height(), 0.f);
+    float w = static_cast<float>(t.get_width());
+    float h = static_cast<float>(t.get_height());
+    tex_scale = {w, h};
     tex = t;
 }
 
@@ -39,7 +41,7 @@ RenderContext::~RenderContext()
 void RenderContext::start_frame()
 {
     std::fill(z_buff, z_buff + w * h, 0);
-    std::fill(f_buff, f_buff + w * h, COLOR_BLACK);
+    std::fill(f_buff, f_buff + w * h, color32::BLACK);
 }
 
 void RenderContext::pixel(uint16_t x, uint16_t y, Color32 c)
